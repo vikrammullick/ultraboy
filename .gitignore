@@ -1,0 +1,4 @@
+*.o
+ultraboy
+*.swp
+.DS_Store
