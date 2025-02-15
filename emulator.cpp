@@ -3,8 +3,9 @@
 
 using namespace std;
 
-emulator_t::emulator_t(const vector<char> &rom_bytes)
-    : m_memory(rom_bytes), m_cpu(m_memory) {}
+emulator_t::emulator_t(const vector<char> &boot_bytes,
+                       const vector<char> &rom_bytes)
+    : m_memory(boot_bytes, rom_bytes), m_cpu(m_memory) {}
 
 emulator_t::~emulator_t() {}
 

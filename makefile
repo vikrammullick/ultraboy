@@ -1,6 +1,6 @@
 CXX := g++
 
-CXXFLAGS := -std=c++17 -Wall -O3
+CXXFLAGS := -std=c++17 -Wall -O3 -Wswitch-enum
 
 SRCS := run.cpp emulator.cpp cpu.cpp memory.cpp sdl_helpers.cpp 
 

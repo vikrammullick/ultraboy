@@ -10,7 +10,8 @@ class emulator_t {
     cpu_t m_cpu;
 
   public:
-    emulator_t(const std::vector<char> &rom_bytes);
+    emulator_t(const std::vector<char> &boot_bytes,
+               const std::vector<char> &rom_bytes);
     ~emulator_t();
 
     void run();
