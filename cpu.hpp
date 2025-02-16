@@ -19,7 +19,10 @@ enum inst_type_t {
     LD_FROM_C_OFFSET,
     LD_INTO_IMM_OFFSET,
     LD_FROM_IMM_OFFSET,
+    // RLCA,
     RLA,
+    // RRCA,
+    // RRA,
     LD_HL,
     XOR,
     BIT,
@@ -32,6 +35,9 @@ enum inst_type_t {
 };
 
 class cpu_t {
+    // TODO: temporary to aid in development
+    bool m_failed = false;
+
     memory_t &m_memory;
 
     std::array<uint8_t, 12> m_reg_file;

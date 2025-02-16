@@ -5,9 +5,11 @@ using namespace std;
 
 emulator_t::emulator_t(const vector<char> &boot_bytes,
                        const vector<char> &rom_bytes)
-    : m_memory(boot_bytes, rom_bytes), m_cpu(m_memory) {}
+    : m_memory(boot_bytes, rom_bytes), m_cpu(m_memory) {
+    sdl_init_window();
+}
 
-emulator_t::~emulator_t() {}
+emulator_t::~emulator_t() { sdl_destroy_window(); }
 
 uint64_t now() {
     return std::chrono::duration_cast<std::chrono::nanoseconds>(
@@ -25,5 +27,7 @@ void emulator_t::run() {
         last_ts = current_ts;
 
         m_cpu.tick();
+
+        sdl_poll_keyboard();
     }
 }

@@ -96,10 +96,23 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::LD_FROM_IMM_OFFSET;
             return;
         }
+        /*if (m_opcode == 0x07) {
+            m_inst_type = inst_type_t::RLCA;
+            return;
+        }*/
         if (m_opcode == 0x17) {
             m_inst_type = inst_type_t::RLA;
             return;
         }
+        /* if (m_opcode == 0x0F) {
+            m_inst_type = inst_type_t::RRCA;
+            return;
+        }
+        if (m_opcode == 0x1F) {
+            m_inst_type = inst_type_t::RRCA;
+            return;
+        }
+        */
         if (opx() == 0x7 && opy() && opy() != 0x6) {
             m_inst_type = inst_type_t::LD_HL;
             return;
@@ -124,7 +137,9 @@ void cpu_t::set_inst_type() {
         oss << "0xcb ";
     }
     oss << "0x" << std::hex << static_cast<uint16_t>(m_opcode);
-    throw std::runtime_error(oss.str());
+    cout << oss.str() << endl;
+    // throw std::runtime_error(oss.str());
+    m_failed = true;
 }
 
 void cpu_t::fetch() {
@@ -144,7 +159,10 @@ void cpu_t::decode() {
     case inst_type_t::LDFROMMEM:
     case inst_type_t::LD_INTO_C_OFFSET:
     case inst_type_t::LD_FROM_C_OFFSET:
+    // case inst_type_t::RLCA:
     case inst_type_t::RLA:
+    // case inst_type_t::RRCA:
+    // case inst_type_t::RRA:
     case inst_type_t::LD_HL:
     case inst_type_t::XOR:
     case inst_type_t::RL:
@@ -224,6 +242,9 @@ void cpu_t::execute() {
     case inst_type_t::LD_FROM_C_OFFSET:
         A() = m_memory.read(0xFF00 + C());
         break;
+    /*case inst_type_t::RLCA:
+        break;
+        */
     case inst_type_t::RLA:
         c_flag = c();
         setC(A() & (1 << 7));
@@ -233,6 +254,11 @@ void cpu_t::execute() {
         setN(0);
         setH(0);
         break;
+    /*case inst_type_t::RRCA:
+        break;
+    case inst_type_t::RRA:
+        break;
+    */
     case inst_type_t::LD_HL:
         m_memory.write(HL(), r8y());
         break;
@@ -311,6 +337,9 @@ void cpu_t::execute() {
 }
 
 void cpu_t::tick() {
+    if (m_failed) {
+        return;
+    }
     fetch();
     decode();
     execute();
