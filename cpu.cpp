@@ -24,7 +24,9 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::NOP;
             return;
         }
-        if ((opx() == 0x2 || opx() == 0x3) && (opy() == 0x0 || opy() == 0x8)) {
+        if (((opx() == 0x2 || opx() == 0x3) &&
+             (opy() == 0x0 || opy() == 0x8)) ||
+            m_opcode == 0x18) {
             m_inst_type = inst_type_t::JR;
             return;
         }
@@ -96,6 +98,14 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::LD_FROM_IMM_OFFSET;
             return;
         }
+        if (m_opcode == 0xEA) {
+            m_inst_type = inst_type_t::LD_INTO_IMM;
+            return;
+        }
+        if (m_opcode == 0xFA) {
+            m_inst_type = inst_type_t::LD_FROM_IMM;
+            return;
+        }
         /*if (m_opcode == 0x07) {
             m_inst_type = inst_type_t::RLCA;
             return;
@@ -132,17 +142,19 @@ void cpu_t::set_inst_type() {
     }
 
     stringstream oss;
-    oss << "unknown opcode: ";
+    oss << hex << "pc: 0x" << m_fetch_pc << " unknown opcode: ";
     if (prefixed) {
         oss << "0xcb ";
     }
-    oss << "0x" << std::hex << static_cast<uint16_t>(m_opcode);
+    oss << "0x" << static_cast<uint16_t>(m_opcode);
     cout << oss.str() << endl;
     // throw std::runtime_error(oss.str());
     m_failed = true;
 }
 
 void cpu_t::fetch() {
+    m_fetch_pc = PC();
+
     m_opcode = m_memory.read(PC()++);
     prefixed = m_opcode == constants::PREFIX;
     if (prefixed) {
@@ -184,6 +196,8 @@ void cpu_t::decode() {
         break;
     case inst_type_t::LD16:
     case inst_type_t::CALL:
+    case inst_type_t::LD_INTO_IMM:
+    case inst_type_t::LD_FROM_IMM:
         m_lo = m_memory.read(PC()++);
         m_hi = m_memory.read(PC()++);
         break;
@@ -235,6 +249,12 @@ void cpu_t::execute() {
         break;
     case inst_type_t::LD_FROM_IMM_OFFSET:
         A() = m_memory.read(0xFF00 + m_lo);
+        break;
+    case inst_type_t::LD_INTO_IMM:
+        m_memory.write(n16(), A());
+        break;
+    case inst_type_t::LD_FROM_IMM:
+        A() = m_memory.read(n16());
         break;
     case inst_type_t::LD_INTO_C_OFFSET:
         m_memory.write(0xFF00 + C(), A());

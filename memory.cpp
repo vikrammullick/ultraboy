@@ -32,6 +32,18 @@ bool supported(uint16_t addr) {
         return false;
     }
 
+    if (addr == 0xFF40 || addr == 0xFF42 || addr == 0xFF43) {
+        // LCDC, SXY, SCX
+        // TODO: move out of normal mapping
+        return true;
+    }
+
+    if (addr == 0xFF44) {
+        // LY
+        // TODO: this should be handled properly
+        return true;
+    }
+
     if (addr >= 0xE000 && addr <= 0xFDFF) {
         // nintendo prohibited
         assert(false);

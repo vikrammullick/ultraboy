@@ -19,6 +19,8 @@ enum inst_type_t {
     LD_FROM_C_OFFSET,
     LD_INTO_IMM_OFFSET,
     LD_FROM_IMM_OFFSET,
+    LD_INTO_IMM,
+    LD_FROM_IMM,
     // RLCA,
     RLA,
     // RRCA,
@@ -37,6 +39,7 @@ enum inst_type_t {
 class cpu_t {
     // TODO: temporary to aid in development
     bool m_failed = false;
+    uint16_t m_fetch_pc;
 
     memory_t &m_memory;
 
@@ -125,6 +128,8 @@ class cpu_t {
 
     bool flag_cond() {
         switch (m_opcode) {
+        case 0x18:
+            return true;
         case 0x20:
         case 0xC0:
             return !z();
