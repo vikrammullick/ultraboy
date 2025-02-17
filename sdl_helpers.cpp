@@ -131,7 +131,8 @@ void sdl_update_tile_row(uint16_t addr, uint8_t byte1, uint8_t byte2) {
 
 void sdl_update_tile_map(bool data_addressing_mode,
                          uint8_t *map,
-                         std::array<uint8_t, 16> *data) {
+                         std::array<uint8_t, 16> *data,
+                         uint8_t palette) {
     void *pixels;
     int pitch;
 
@@ -168,7 +169,9 @@ void sdl_update_tile_map(bool data_addressing_mode,
                     bool bit2 = byte2 & (1 << offset2);
                     uint8_t shade = ((bit2 ? 1 : 0) << 1) + (bit1 ? 1 : 0);
 
-                    uint8_t s = 255 - (shade * 85);
+                    uint8_t palette_shade = (palette >> (shade * 2)) & 0b11;
+                    uint8_t s = 255 - (palette_shade * 85);
+
                     for (size_t xx = 0; xx < constants::DISPLAY_SCALE; ++xx) {
                         for (size_t yy = 0; yy < constants::DISPLAY_SCALE;
                              ++yy) {

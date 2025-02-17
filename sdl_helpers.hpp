@@ -23,6 +23,7 @@ extern void sdl_destroy_windows();
 extern void sdl_update_tile_row(uint16_t addr, uint8_t byte1, uint8_t byte2);
 extern void sdl_update_tile_map(bool data_addressing_mode,
                                 uint8_t *map,
-                                std::array<uint8_t, 16> *data);
+                                std::array<uint8_t, 16> *data,
+                                uint8_t palette);
 
 #endif
