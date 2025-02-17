@@ -5,10 +5,14 @@
 
 namespace constants {
 
+constexpr uint32_t DISPLAY_SCALE = 2;
+
 constexpr uint32_t TILE_SIZE = 8;
 constexpr uint32_t TILE_DATA_VIEWER_X_LEN = 16;
 constexpr uint32_t TILE_DATA_VIEWER_Y_LEN = 24;
-constexpr uint32_t DISPLAY_SCALE = 3;
+
+constexpr uint32_t TILE_MAP_VIEWER_X_LEN = 32;
+constexpr uint32_t TILE_MAP_VIEWER_Y_LEN = 64;
 
 constexpr uint32_t MEM_SIZE = 1 << 16;
 

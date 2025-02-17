@@ -6,10 +6,10 @@ using namespace std;
 emulator_t::emulator_t(const vector<char> &boot_bytes,
                        const vector<char> &rom_bytes)
     : m_memory(boot_bytes, rom_bytes), m_cpu(m_memory) {
-    sdl_init_window();
+    sdl_init_windows();
 }
 
-emulator_t::~emulator_t() { sdl_destroy_window(); }
+emulator_t::~emulator_t() { sdl_destroy_windows(); }
 
 uint64_t now() {
     return std::chrono::duration_cast<std::chrono::nanoseconds>(

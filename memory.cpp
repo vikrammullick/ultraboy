@@ -66,14 +66,27 @@ void memory_t::write(uint16_t addr, uint8_t val) {
 
     m_data[addr] = val;
 
-    if (addr < 0x8000 || addr >= 0x9800) {
-        return;
+    if (addr == 0xFF40) {
+        sdl_update_tile_map(m_data[0xFF40] & (1 << 4),
+                            &m_data[0x9800],
+                            (std::array<uint8_t, 16> *)&m_data[0x8000]);
     }
 
-    if (addr % 2 == 0) {
-        sdl_update_tile_row(addr, val, m_data[addr + 1]);
-    } else {
-        sdl_update_tile_row(addr - 1, m_data[addr - 1], val);
+    if (addr >= 0x8000 && addr < 0x9800) {
+        if (addr % 2 == 0) {
+            sdl_update_tile_row(addr, val, m_data[addr + 1]);
+        } else {
+            sdl_update_tile_row(addr - 1, m_data[addr - 1], val);
+        }
+        sdl_update_tile_map(m_data[0xFF40] & (1 << 4),
+                            &m_data[0x9800],
+                            (std::array<uint8_t, 16> *)&m_data[0x8000]);
+    }
+
+    if (addr >= 0x9800 && addr < 0x9FFF) {
+        sdl_update_tile_map(m_data[0xFF40] & (1 << 4),
+                            &m_data[0x9800],
+                            (std::array<uint8_t, 16> *)&m_data[0x8000]);
     }
 }
 
