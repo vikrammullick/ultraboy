@@ -30,6 +30,12 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::JR;
             return;
         }
+        if (((opx() == 0xC || opx() == 0xD) &&
+             (opy() == 0x2 || opy() == 0xA)) ||
+            m_opcode == 0xC3) {
+            m_inst_type = inst_type_t::JP;
+            return;
+        }
         if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x6 || opy() == 0xE) &&
             m_opcode != 0x36) {
             m_inst_type = inst_type_t::LD8;
@@ -131,6 +137,10 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::XOR;
             return;
         }
+        if (opx() == 0x9 && opy() < 0x8 && opy() != 0x6) {
+            m_inst_type = inst_type_t::SUB;
+            return;
+        }
         if (m_opcode == 0xCD) {
             m_inst_type = inst_type_t::CALL;
             return;
@@ -177,6 +187,7 @@ void cpu_t::decode() {
     // case inst_type_t::RRA:
     case inst_type_t::LD_HL:
     case inst_type_t::XOR:
+    case inst_type_t::SUB:
     case inst_type_t::RL:
     case inst_type_t::BIT:
     case inst_type_t::INC:
@@ -198,6 +209,7 @@ void cpu_t::decode() {
     case inst_type_t::CALL:
     case inst_type_t::LD_INTO_IMM:
     case inst_type_t::LD_FROM_IMM:
+    case inst_type_t::JP:
         m_lo = m_memory.read(PC()++);
         m_hi = m_memory.read(PC()++);
         break;
@@ -216,6 +228,12 @@ void cpu_t::execute() {
 
     switch (m_inst_type) {
     case inst_type_t::NOP:
+        break;
+    case inst_type_t::JP:
+        if (!flag_cond()) {
+            return;
+        }
+        PC() = n16();
         break;
     case inst_type_t::JR:
         if (!flag_cond()) {
@@ -325,6 +343,13 @@ void cpu_t::execute() {
         setH(0);
         setC(0);
         break;
+    case inst_type_t::SUB:
+        setH((r8y() & 0xF) > (A() & 0xF));
+        setC(r8y() > A());
+        A() -= r8y();
+        setZ(A() == 0);
+        setN(1);
+        break;
     case inst_type_t::RL:
         c_flag = c();
         setC(r8y() & (1 << 7));
@@ -361,6 +386,9 @@ void cpu_t::tick() {
         return;
     }
     fetch();
+    if (m_failed) {
+        return;
+    }
     decode();
     execute();
 }

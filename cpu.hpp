@@ -6,6 +6,7 @@
 enum inst_type_t {
     NOP,
     JR,
+    JP,
     LD8,
     INC,
     DEC,
@@ -27,6 +28,7 @@ enum inst_type_t {
     // RRA,
     LD_HL,
     XOR,
+    SUB,
     BIT,
     RL,
     CALL,
@@ -129,18 +131,23 @@ class cpu_t {
     bool flag_cond() {
         switch (m_opcode) {
         case 0x18:
+        case 0xC3:
             return true;
         case 0x20:
         case 0xC0:
+        case 0xC2:
             return !z();
         case 0x28:
         case 0xC8:
+        case 0xCA:
             return z();
         case 0x38:
         case 0xD8:
+        case 0xD2:
             return c();
         case 0x30:
         case 0xD0:
+        case 0xDA:
             return !c();
         default:
             assert(false);
