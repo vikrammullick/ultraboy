@@ -6,6 +6,7 @@
 #include "memory.hpp"
 
 class emulator_t {
+    ppu_t m_ppu;
     memory_t m_memory;
     cpu_t m_cpu;
 

@@ -5,7 +5,7 @@ using namespace std;
 
 emulator_t::emulator_t(const vector<char> &boot_bytes,
                        const vector<char> &rom_bytes)
-    : m_memory(boot_bytes, rom_bytes), m_cpu(m_memory) {
+    : m_memory(boot_bytes, rom_bytes, m_ppu), m_cpu(m_memory) {
     sdl_init_windows();
 }
 
@@ -27,6 +27,7 @@ void emulator_t::run() {
         last_ts = current_ts;
 
         m_cpu.tick();
+        m_ppu.tick();
 
         sdl_poll_keyboard();
     }
