@@ -67,6 +67,11 @@ bool ppu_addr(uint16_t addr) {
 }
 
 void memory_t::write(uint16_t addr, uint8_t val) {
+    if (addr == constants::BOOT_ROM_DISABLE && val) {
+        m_boot_rom_disable = true;
+        return;
+    }
+
     if (ppu_addr(addr)) {
         m_ppu.write(addr, val);
         m_ppu.redraw(addr, val);
@@ -91,7 +96,7 @@ uint8_t memory_t::read(uint16_t addr) {
         assert(false);
     }
 
-    if (addr < 0x0100) {
+    if (addr < 0x0100 && !m_boot_rom_disable) {
         return m_boot[addr];
     } else if (addr < 8000) {
         return m_rom[addr];

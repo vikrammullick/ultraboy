@@ -35,7 +35,10 @@ enum inst_type_t {
     PUSH,
     POP,
     RET,
-    CP_IMM
+    CP_IMM,
+    CP_HL,
+    ADD_HL,
+    DI
 };
 
 class cpu_t {
@@ -46,6 +49,8 @@ class cpu_t {
     memory_t &m_memory;
 
     std::array<uint8_t, 12> m_reg_file;
+
+    bool m_IME = false;
 
     uint8_t m_lo;
     uint8_t m_hi;
@@ -171,6 +176,9 @@ class cpu_t {
     uint16_t &HL() { return ith_r16(3); }
     uint16_t &SP() { return ith_r16(4); }
     uint16_t &PC() { return ith_r16(5); }
+
+    void alu_cp(uint8_t operand);
+    void alu_add(uint8_t operand);
 
   public:
     cpu_t(memory_t &memory);

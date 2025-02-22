@@ -7,14 +7,20 @@
 #include <cstdint>
 
 class ppu_t {
-    uint8_t m_LCDC;
-    uint8_t m_SCY;
-    uint8_t m_SCX;
-    uint8_t m_LY;
-    uint8_t m_BGP;
+    uint8_t m_LCDC = 0;
+    uint8_t m_SCY = 0;
+    uint8_t m_SCX = 0;
+    uint8_t m_LY = 0;
+    uint8_t m_BGP = 0;
+
+    uint32_t m_ticks = 0;
 
     std::array<uint8_t, constants::TILE_DATA_SIZE> m_tile_data{};
     std::array<uint8_t, constants::TILE_MAP_SIZE> m_tile_map{};
+
+    bool ppu_enable() { return m_LCDC & (1 << 7); }
+    bool bg_win_tile_data_area() { return m_LCDC & (1 << 4); }
+    bool bg_tile_map_area() { return m_LCDC & (1 << 3); }
 
   public:
     ppu_t();

@@ -129,13 +129,25 @@ void cpu_t::set_inst_type() {
             return;
         }
         */
-        if (opx() == 0x7 && opy() && opy() != 0x6) {
+        if (opx() == 0x7 && opy() < 0x8 && opy() != 0x6) {
             m_inst_type = inst_type_t::LD_HL;
             return;
+        }
+        if (opx() == 0x8 && opy() < 0x8) {
+            if (opy() == 0x6) {
+                m_inst_type = inst_type_t::ADD_HL;
+                return;
+            }
         }
         if (opx() == 0xA && opy() >= 0x8 && opy() != 0xE) {
             m_inst_type = inst_type_t::XOR;
             return;
+        }
+        if (opx() == 0xB && opy() >= 0x8) {
+            if (opy() == 0xE) {
+                m_inst_type = inst_type_t::CP_HL;
+                return;
+            }
         }
         if (opx() == 0x9 && opy() < 0x8 && opy() != 0x6) {
             m_inst_type = inst_type_t::SUB;
@@ -147,6 +159,10 @@ void cpu_t::set_inst_type() {
         }
         if (m_opcode == 0xFE) {
             m_inst_type = inst_type_t::CP_IMM;
+            return;
+        }
+        if (m_opcode == 0xF3) {
+            m_inst_type = inst_type_t::DI;
             return;
         }
     }
@@ -197,6 +213,9 @@ void cpu_t::decode() {
     case inst_type_t::PUSH:
     case inst_type_t::POP:
     case inst_type_t::RET:
+    case inst_type_t::CP_HL:
+    case inst_type_t::ADD_HL:
+    case inst_type_t::DI:
         break;
     case inst_type_t::LD8:
     case inst_type_t::JR:
@@ -370,15 +389,36 @@ void cpu_t::execute() {
         PC() = n16();
         break;
     case inst_type_t::CP_IMM:
-        setH((m_lo & 0xF) > (A() & 0xF));
-        setC(m_lo > A());
-        A() -= m_lo;
-        setZ(A() == 0);
-        setN(1);
+        alu_cp(m_lo);
+        break;
+    case inst_type_t::CP_HL:
+        alu_cp(m_memory.read(HL()));
+        break;
+    case inst_type_t::ADD_HL:
+        alu_add(m_memory.read(HL()));
+        break;
+    case inst_type_t::DI:
+        m_IME = false;
         break;
     default:
         throw std::runtime_error("unknown instruction type (execute)");
     }
+}
+
+void cpu_t::alu_add(uint8_t operand) {
+    setH(((A() & 0xF) + (operand & 0xF)) > 0xF);
+    setN(0);
+    setC((static_cast<uint16_t>(A()) + static_cast<uint16_t>(operand)) > 0xFF);
+    A() += operand;
+    setZ(A() == 0);
+}
+
+void cpu_t::alu_cp(uint8_t operand) {
+    setH((operand & 0xF) > (A() & 0xF));
+    setC(operand > A());
+    uint8_t temp_a = A() - operand;
+    setZ(temp_a == 0);
+    setN(1);
 }
 
 void cpu_t::tick() {

@@ -17,6 +17,8 @@ class memory_t {
     std::vector<char> m_boot;
     std::vector<char> m_rom;
 
+    bool m_boot_rom_disable = false;
+
     ppu_t &m_ppu;
 
   public:

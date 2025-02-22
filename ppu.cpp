@@ -7,7 +7,18 @@ using namespace std;
 
 ppu_t::ppu_t() {}
 
-void ppu_t::tick() {}
+void ppu_t::tick() {
+    if (!ppu_enable()) {
+        return;
+    }
+
+    m_ticks++;
+    if (m_ticks == 70224) {
+        m_ticks = 0;
+    }
+
+    m_LY = m_ticks / 456;
+}
 
 void ppu_t::write(uint16_t addr, uint8_t val) {
     if (addr == constants::LCDC) {
@@ -100,8 +111,8 @@ void ppu_t::redraw(uint16_t addr, uint8_t val) {
         }
     }
 
-    sdl_update_tile_map(m_LCDC & (1 << 4),
-                        m_LCDC & (1 << 3) ? &m_tile_map[1024] : &m_tile_map[0],
+    sdl_update_tile_map(bg_win_tile_data_area(),
+                        bg_tile_map_area() ? &m_tile_map[1024] : &m_tile_map[0],
                         (std::array<uint8_t, 16> *)&m_tile_data[0],
                         m_BGP);
 }

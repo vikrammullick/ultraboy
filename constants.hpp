@@ -7,11 +7,13 @@ namespace constants {
 
 constexpr uint32_t MEM_SIZE = 1 << 16;
 
-constexpr uint64_t NANOS_PER_TICK = 238;
+constexpr uint64_t NANOS_PER_TICK = 238; // 4.194 MHz
 
 constexpr uint16_t PC_START = 0x0000;
 
 constexpr uint8_t PREFIX = 0xCB;
+
+constexpr uint16_t BOOT_ROM_DISABLE = 0xFF50;
 
 // ppu constants
 constexpr uint16_t LCDC = 0xFF40;
