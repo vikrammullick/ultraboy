@@ -18,6 +18,10 @@ void ppu_t::tick() {
     }
 
     m_LY = m_ticks / 456;
+
+    if (m_LY == 144) {
+        m_vblank_interrupt = true;
+    }
 }
 
 void ppu_t::write(uint16_t addr, uint8_t val) {
@@ -58,6 +62,16 @@ void ppu_t::write(uint16_t addr, uint8_t val) {
 
     if (addr == constants::OBP1) {
         m_OBP1 = val;
+        return;
+    }
+
+    if (addr == constants::WX) {
+        m_WY = val;
+        return;
+    }
+
+    if (addr == constants::WY) {
+        m_WX = val;
         return;
     }
 
@@ -113,6 +127,14 @@ uint8_t ppu_t::read(uint16_t addr) {
 
     if (addr == constants::OBP1) {
         return m_OBP1;
+    }
+
+    if (addr == constants::WX) {
+        return m_WY;
+    }
+
+    if (addr == constants::WY) {
+        return m_WX;
     }
 
     if (addr >= constants::TILE_DATA_START &&

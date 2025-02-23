@@ -18,6 +18,14 @@ uint8_t cpu_t::read(uint16_t addr) {
         return m_IE;
     }
 
+    if (addr == constants::TMA) {
+        return m_TMA;
+    }
+
+    if (addr == constants::TAC) {
+        return m_TAC;
+    }
+
     return m_memory.read(addr);
 }
 
@@ -32,6 +40,16 @@ void cpu_t::write(uint16_t addr, uint8_t val) {
         return;
     }
 
+    if (addr == constants::TMA) {
+        m_TMA = val;
+        return;
+    }
+
+    if (addr == constants::TAC) {
+        m_TAC = val;
+        return;
+    }
+
     m_memory.write(addr, val);
 }
 
@@ -43,6 +61,10 @@ void cpu_t::set_inst_type() {
         }
         if (opx() == 0x1 && opy() < 0x8 && opy() != 0x6) {
             m_inst_type = inst_type_t::RL;
+            return;
+        }
+        if (opx() == 0x3 && opy() < 0x8 && opy() != 0x6) {
+            m_inst_type = inst_type_t::SWAP;
             return;
         }
     } else {
@@ -62,6 +84,10 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::JP;
             return;
         }
+        if (m_opcode == 0xE9) {
+            m_inst_type = inst_type_t::JP_HL;
+            return;
+        }
         if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x6 || opy() == 0xE)) {
             if (m_opcode == 0x36) {
                 m_inst_type = inst_type_t::LD8_HL;
@@ -70,9 +96,12 @@ void cpu_t::set_inst_type() {
             }
             return;
         }
-        if (opx() >= 0x4 && opx() <= 0x7 && (opx() != 0x7 || opy() >= 0x8) &&
-            (opy() & 0b111) != 0x6) {
-            m_inst_type = inst_type_t::LD_REG_REG;
+        if (opx() >= 0x4 && opx() <= 0x7 && (opx() != 0x7 || opy() >= 0x8)) {
+            if ((opy() & 0b111) != 0x6) {
+                m_inst_type = inst_type_t::LD_REG_REG;
+            } else {
+                m_inst_type = inst_type_t::LD_REG_FROM_HL;
+            }
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x5 || opy() == 0xD) &&
@@ -80,13 +109,20 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::DEC;
             return;
         }
-        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x4 || opy() == 0xC) &&
-            m_opcode != 0x34) {
-            m_inst_type = inst_type_t::INC;
+        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x4 || opy() == 0xC)) {
+            if (m_opcode != 0x34) {
+                m_inst_type = inst_type_t::INC;
+            } else {
+                m_inst_type = inst_type_t::INC_HL;
+            }
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0x3) {
             m_inst_type = inst_type_t::INC16;
+            return;
+        }
+        if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0x9) {
+            m_inst_type = inst_type_t::ADD16;
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0xB) {
@@ -105,8 +141,14 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::POP;
             return;
         }
-        if (m_opcode == 0xC9) {
+        if (((opx() == 0xC || opx() == 0xD) &&
+             (opy() == 0x0 || opy() == 0x8)) ||
+            m_opcode == 0xC9) {
             m_inst_type = inst_type_t::RET;
+            return;
+        }
+        if (m_opcode == 0xD9) {
+            m_inst_type = inst_type_t::RETI;
             return;
         }
         if (opx() >= 0xC && opx() <= 0xF && opy() == 0x5) {
@@ -168,8 +210,20 @@ void cpu_t::set_inst_type() {
                 return;
             }
         }
+        if (opx() == 0x8 && opy() < 0x8 && opy() != 0x6) {
+            m_inst_type = inst_type_t::ADD;
+            return;
+        }
+        if (opx() == 0xA && opy() < 0x8 && opy() != 0x6) {
+            m_inst_type = inst_type_t::AND;
+            return;
+        }
         if (opx() == 0xA && opy() >= 0x8 && opy() != 0xE) {
             m_inst_type = inst_type_t::XOR;
+            return;
+        }
+        if (opx() == 0xB && opy() < 0x8 && opy() != 0x6) {
+            m_inst_type = inst_type_t::OR;
             return;
         }
         if (opx() == 0xB && opy() >= 0x8) {
@@ -182,8 +236,18 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::SUB;
             return;
         }
-        if (m_opcode == 0xCD) {
+        if (((opx() == 0xC || opx() == 0xD) &&
+             (opy() == 0x4 || opy() == 0xC)) ||
+            m_opcode == 0xCD) {
             m_inst_type = inst_type_t::CALL;
+            return;
+        }
+        if ((opx() >= 0xC && opx() <= 0xF) && (opy() == 0x7 || opy() == 0xF)) {
+            m_inst_type = inst_type_t::RST;
+            return;
+        }
+        if (m_opcode == 0xE6) {
+            m_inst_type = inst_type_t::AND_IMM;
             return;
         }
         if (m_opcode == 0xFE) {
@@ -192,6 +256,14 @@ void cpu_t::set_inst_type() {
         }
         if (m_opcode == 0xF3) {
             m_inst_type = inst_type_t::DI;
+            return;
+        }
+        if (m_opcode == 0xFB) {
+            m_inst_type = inst_type_t::EI;
+            return;
+        }
+        if (m_opcode == 0x2F) {
+            m_inst_type = inst_type_t::CPL;
             return;
         }
     }
@@ -209,13 +281,15 @@ void cpu_t::set_inst_type() {
 
 void cpu_t::fetch() {
     m_fetch_pc = PC();
-    cout << hex << "pc: 0x" << m_fetch_pc << endl;
 
     m_opcode = read(PC()++);
     prefixed = m_opcode == constants::PREFIX;
     if (prefixed) {
         m_opcode = read(PC()++);
     }
+
+    cout << hex << "pc: 0x" << m_fetch_pc << " opcode: 0x" << hex
+         << int(m_opcode) << endl;
     set_inst_type();
 }
 
@@ -223,6 +297,7 @@ void cpu_t::decode() {
     switch (m_inst_type) {
     case inst_type_t::NOP:
     case inst_type_t::LD_REG_REG:
+    case inst_type_t::LD_REG_FROM_HL:
     case inst_type_t::LDMEM16:
     case inst_type_t::LDFROMMEM:
     case inst_type_t::LD_INTO_C_OFFSET:
@@ -232,20 +307,31 @@ void cpu_t::decode() {
     // case inst_type_t::RRCA:
     // case inst_type_t::RRA:
     case inst_type_t::LD_HL:
+    case inst_type_t::ADD:
+    case inst_type_t::AND:
     case inst_type_t::XOR:
+    case inst_type_t::OR:
     case inst_type_t::SUB:
     case inst_type_t::RL:
+    case inst_type_t::SWAP:
     case inst_type_t::BIT:
     case inst_type_t::INC:
+    case inst_type_t::INC_HL:
     case inst_type_t::DEC:
     case inst_type_t::INC16:
+    case inst_type_t::ADD16:
     case inst_type_t::DEC16:
     case inst_type_t::PUSH:
     case inst_type_t::POP:
     case inst_type_t::RET:
+    case inst_type_t::RETI:
     case inst_type_t::CP_HL:
     case inst_type_t::ADD_HL:
     case inst_type_t::DI:
+    case inst_type_t::EI:
+    case inst_type_t::CPL:
+    case inst_type_t::RST:
+    case inst_type_t::JP_HL:
         break;
     case inst_type_t::LD8:
     case inst_type_t::LD8_HL:
@@ -253,6 +339,7 @@ void cpu_t::decode() {
     case inst_type_t::LD_INTO_IMM_OFFSET:
     case inst_type_t::LD_FROM_IMM_OFFSET:
     case inst_type_t::CP_IMM:
+    case inst_type_t::AND_IMM:
         m_lo = read(PC()++);
         break;
     case inst_type_t::LD16:
@@ -285,6 +372,9 @@ void cpu_t::execute() {
         }
         PC() = n16();
         break;
+    case inst_type_t::JP_HL:
+        PC() = read(HL());
+        break;
     case inst_type_t::JR:
         if (!flag_cond()) {
             return;
@@ -293,6 +383,9 @@ void cpu_t::execute() {
         break;
     case inst_type_t::LD_REG_REG:
         r8x() = r8y();
+        break;
+    case inst_type_t::LD_REG_FROM_HL:
+        r8x() = read(HL());
         break;
     case inst_type_t::LDMEM16:
         if (opx() == 0x2) {
@@ -357,10 +450,10 @@ void cpu_t::execute() {
         write(HL(), m_lo);
         break;
     case inst_type_t::INC:
-        r8x()++;
-        setZ(!r8x());
-        setN(0);
-        setH(!(r8x() & 0xF));
+        r8x() = alu_inc(r8x());
+        break;
+    case inst_type_t::INC_HL:
+        write(HL(), alu_inc(read(HL())));
         break;
     case inst_type_t::DEC:
         r8x()--;
@@ -370,6 +463,13 @@ void cpu_t::execute() {
         break;
     case inst_type_t::INC16:
         r16x()++;
+        break;
+    case inst_type_t::ADD16:
+        setH(((HL() & 0x0FFF) + (r16x() & 0x0FFF)) > 0x0FFF);
+        setN(0);
+        setC((static_cast<uint32_t>(HL()) + static_cast<uint32_t>(r16x())) >
+             0xFFFF);
+        HL() += r16x();
         break;
     case inst_type_t::DEC16:
         r16x()--;
@@ -386,11 +486,32 @@ void cpu_t::execute() {
         split_reg(r16x(), true) = read(SP()++);
         break;
     case inst_type_t::RET:
+        if (!flag_cond()) {
+            return;
+        }
         split_reg(PC(), false) = read(SP()++);
         split_reg(PC(), true) = read(SP()++);
         break;
+    case inst_type_t::RETI:
+        m_IME = true;
+        split_reg(PC(), false) = read(SP()++);
+        split_reg(PC(), true) = read(SP()++);
+        break;
+    case inst_type_t::ADD:
+        alu_add(r8y());
+        break;
+    case inst_type_t::AND:
+        alu_and(r8y());
+        break;
     case inst_type_t::XOR:
         A() ^= r8y();
+        setZ(A() == 0);
+        setN(0);
+        setH(0);
+        setC(0);
+        break;
+    case inst_type_t::OR:
+        A() |= r8y();
         setZ(A() == 0);
         setN(0);
         setH(0);
@@ -412,15 +533,29 @@ void cpu_t::execute() {
         setN(0);
         setH(0);
         break;
+    case inst_type_t::SWAP:
+        r8y() = (r8y() >> 4) | (r8y() << 4);
+        setZ(r8y() == 0);
+        setN(0);
+        setH(0);
+        setC(0);
+        break;
     case inst_type_t::BIT:
         setZ(!(r8y() & (1 << ((opx() - 0x4) * 2 + opy() / 8))));
         setH(0);
         setC(1);
         break;
     case inst_type_t::CALL:
-        write(--SP(), split_reg(PC(), true));
-        write(--SP(), split_reg(PC(), false));
-        PC() = n16();
+        if (!flag_cond()) {
+            return;
+        }
+        call(n16());
+        break;
+    case inst_type_t::RST:
+        call((opx() - 0xC) << 4 | (opy() - 0x7));
+        break;
+    case inst_type_t::AND_IMM:
+        alu_and(m_lo);
         break;
     case inst_type_t::CP_IMM:
         alu_cp(m_lo);
@@ -434,9 +569,23 @@ void cpu_t::execute() {
     case inst_type_t::DI:
         m_IME = false;
         break;
+    case inst_type_t::EI:
+        m_pending_IME = true;
+        break;
+    case inst_type_t::CPL:
+        A() = ~A();
+        setN(1);
+        setH(1);
+        break;
     default:
         throw std::runtime_error("unknown instruction type (execute)");
     }
+}
+
+void cpu_t::call(uint16_t v) {
+    write(--SP(), split_reg(PC(), true));
+    write(--SP(), split_reg(PC(), false));
+    PC() = v;
 }
 
 void cpu_t::alu_add(uint8_t operand) {
@@ -447,6 +596,14 @@ void cpu_t::alu_add(uint8_t operand) {
     setZ(A() == 0);
 }
 
+void cpu_t::alu_and(uint8_t operand) {
+    A() &= operand;
+    setZ(A() == 0);
+    setN(1);
+    setH(0);
+    setC(1);
+}
+
 void cpu_t::alu_cp(uint8_t operand) {
     setH((operand & 0xF) > (A() & 0xF));
     setC(operand > A());
@@ -455,7 +612,20 @@ void cpu_t::alu_cp(uint8_t operand) {
     setN(1);
 }
 
+uint8_t cpu_t::alu_inc(uint8_t operand) {
+    operand++;
+    setZ(!operand);
+    setN(0);
+    setH(!(operand & 0xF));
+    return operand;
+}
+
 void cpu_t::tick() {
+    if (m_pending_IME) {
+        m_IME = true;
+        m_pending_IME = false;
+    }
+
     if (m_failed) {
         return;
     }
@@ -465,4 +635,6 @@ void cpu_t::tick() {
     }
     decode();
     execute();
+
+    // TODO: service interrupt requests
 }

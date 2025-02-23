@@ -29,6 +29,10 @@ void emulator_t::run() {
         m_cpu.tick();
         m_ppu.tick();
 
+        if (m_ppu.check_vblank_interrupt()) {
+            m_cpu.request_vblank_interrupt();
+        }
+
         sdl_poll_keyboard();
     }
 }

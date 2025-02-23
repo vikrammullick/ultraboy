@@ -19,6 +19,8 @@ class memory_t {
 
     bool m_boot_rom_disable = false;
 
+    uint8_t m_keyboard;
+
     ppu_t &m_ppu;
 
   public:

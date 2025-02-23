@@ -15,8 +15,11 @@ class ppu_t {
     uint8_t m_BGP = 0;
     uint8_t m_OBP0 = 0;
     uint8_t m_OBP1 = 0;
+    uint8_t m_WX = 0;
+    uint8_t m_WY = 0;
 
     uint32_t m_ticks = 0;
+    bool m_vblank_interrupt = false;
 
     std::array<uint8_t, constants::TILE_DATA_SIZE> m_tile_data{};
     std::array<uint8_t, constants::TILE_MAP_SIZE> m_tile_map{};
@@ -35,6 +38,12 @@ class ppu_t {
     uint8_t read(uint16_t addr);
 
     void redraw(uint16_t addr, uint8_t val);
+
+    bool check_vblank_interrupt() {
+        bool ret = m_vblank_interrupt;
+        m_vblank_interrupt = false;
+        return ret;
+    }
 };
 
 #endif // PPU_H

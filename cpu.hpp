@@ -7,13 +7,17 @@ enum inst_type_t {
     NOP,
     JR,
     JP,
+    JP_HL,
     LD8,
     LD8_HL,
     INC,
+    INC_HL,
     DEC,
     INC16,
+    ADD16,
     DEC16,
     LD_REG_REG,
+    LD_REG_FROM_HL,
     LD16,
     LDMEM16,
     LDFROMMEM,
@@ -28,18 +32,27 @@ enum inst_type_t {
     // RRCA,
     // RRA,
     LD_HL,
+    ADD,
+    AND,
     XOR,
+    OR,
     SUB,
     BIT,
     RL,
+    SWAP,
     CALL,
+    RST,
     PUSH,
     POP,
     RET,
+    RETI,
+    AND_IMM,
     CP_IMM,
     CP_HL,
     ADD_HL,
-    DI
+    CPL,
+    DI,
+    EI
 };
 
 class cpu_t {
@@ -52,8 +65,12 @@ class cpu_t {
     std::array<uint8_t, 12> m_reg_file;
 
     bool m_IME = false;
+    bool m_pending_IME = false;
     uint8_t m_IF = 0;
     uint8_t m_IE = 0;
+
+    uint8_t m_TMA = 0;
+    uint8_t m_TAC = 0;
 
     uint8_t m_lo;
     uint8_t m_hi;
@@ -143,22 +160,28 @@ class cpu_t {
         switch (m_opcode) {
         case 0x18:
         case 0xC3:
+        case 0xC9:
+        case 0xCD:
             return true;
         case 0x20:
         case 0xC0:
         case 0xC2:
+        case 0xC4:
             return !z();
         case 0x28:
         case 0xC8:
         case 0xCA:
+        case 0xCC:
             return z();
         case 0x38:
         case 0xD8:
-        case 0xD2:
+        case 0xDA:
+        case 0xDC:
             return c();
         case 0x30:
         case 0xD0:
-        case 0xDA:
+        case 0xD2:
+        case 0xD4:
             return !c();
         default:
             assert(false);
@@ -183,13 +206,19 @@ class cpu_t {
     uint16_t &SP() { return ith_r16(4); }
     uint16_t &PC() { return ith_r16(5); }
 
+    void call(uint16_t v);
+
     void alu_cp(uint8_t operand);
     void alu_add(uint8_t operand);
+    void alu_and(uint8_t operand);
+    uint8_t alu_inc(uint8_t operand);
 
   public:
     cpu_t(memory_t &memory);
 
     void tick();
+
+    void request_vblank_interrupt() { m_IF |= 0b1; }
 };
 
 #endif // CPU_H
