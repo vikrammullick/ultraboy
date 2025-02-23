@@ -8,6 +8,7 @@ enum inst_type_t {
     JR,
     JP,
     LD8,
+    LD8_HL,
     INC,
     DEC,
     INC16,
@@ -51,6 +52,8 @@ class cpu_t {
     std::array<uint8_t, 12> m_reg_file;
 
     bool m_IME = false;
+    uint8_t m_IF = 0;
+    uint8_t m_IE = 0;
 
     uint8_t m_lo;
     uint8_t m_hi;
@@ -64,6 +67,9 @@ class cpu_t {
     void execute();
 
     void set_inst_type();
+
+    void write(uint16_t addr, uint8_t val);
+    uint8_t read(uint16_t addr);
 
     // operands
     uint16_t n16() { return (m_hi << 8) + m_lo; }

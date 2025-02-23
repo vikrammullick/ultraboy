@@ -9,6 +9,32 @@ cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {
     PC() = constants::PC_START;
 }
 
+uint8_t cpu_t::read(uint16_t addr) {
+    if (addr == constants::IF) {
+        return m_IF;
+    }
+
+    if (addr == constants::IE) {
+        return m_IE;
+    }
+
+    return m_memory.read(addr);
+}
+
+void cpu_t::write(uint16_t addr, uint8_t val) {
+    if (addr == constants::IF) {
+        m_IF = val;
+        return;
+    }
+
+    if (addr == constants::IE) {
+        m_IE = val;
+        return;
+    }
+
+    m_memory.write(addr, val);
+}
+
 void cpu_t::set_inst_type() {
     if (prefixed) {
         if (opx() >= 0x4 && opx() <= 0x7 && (opy() & 0b111) != 0x6) {
@@ -36,9 +62,12 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::JP;
             return;
         }
-        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x6 || opy() == 0xE) &&
-            m_opcode != 0x36) {
-            m_inst_type = inst_type_t::LD8;
+        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x6 || opy() == 0xE)) {
+            if (m_opcode == 0x36) {
+                m_inst_type = inst_type_t::LD8_HL;
+            } else {
+                m_inst_type = inst_type_t::LD8;
+            }
             return;
         }
         if (opx() >= 0x4 && opx() <= 0x7 && (opx() != 0x7 || opy() >= 0x8) &&
@@ -180,11 +209,12 @@ void cpu_t::set_inst_type() {
 
 void cpu_t::fetch() {
     m_fetch_pc = PC();
+    cout << hex << "pc: 0x" << m_fetch_pc << endl;
 
-    m_opcode = m_memory.read(PC()++);
+    m_opcode = read(PC()++);
     prefixed = m_opcode == constants::PREFIX;
     if (prefixed) {
-        m_opcode = m_memory.read(PC()++);
+        m_opcode = read(PC()++);
     }
     set_inst_type();
 }
@@ -218,19 +248,20 @@ void cpu_t::decode() {
     case inst_type_t::DI:
         break;
     case inst_type_t::LD8:
+    case inst_type_t::LD8_HL:
     case inst_type_t::JR:
     case inst_type_t::LD_INTO_IMM_OFFSET:
     case inst_type_t::LD_FROM_IMM_OFFSET:
     case inst_type_t::CP_IMM:
-        m_lo = m_memory.read(PC()++);
+        m_lo = read(PC()++);
         break;
     case inst_type_t::LD16:
     case inst_type_t::CALL:
     case inst_type_t::LD_INTO_IMM:
     case inst_type_t::LD_FROM_IMM:
     case inst_type_t::JP:
-        m_lo = m_memory.read(PC()++);
-        m_hi = m_memory.read(PC()++);
+        m_lo = read(PC()++);
+        m_hi = read(PC()++);
         break;
     default:
         throw std::runtime_error("unknown instruction type (decode)");
@@ -265,39 +296,39 @@ void cpu_t::execute() {
         break;
     case inst_type_t::LDMEM16:
         if (opx() == 0x2) {
-            m_memory.write(HL()++, A());
+            write(HL()++, A());
         } else if (opx() == 0x3) {
-            m_memory.write(HL()--, A());
+            write(HL()--, A());
         } else {
-            m_memory.write(r16x(), A());
+            write(r16x(), A());
         }
         break;
     case inst_type_t::LDFROMMEM:
         if (opx() == 0x2) {
-            A() = m_memory.read(HL()++);
+            A() = read(HL()++);
         } else if (opx() == 0x3) {
-            A() = m_memory.read(HL()--);
+            A() = read(HL()--);
         } else {
-            A() = m_memory.read(r16x());
+            A() = read(r16x());
         }
         break;
     case inst_type_t::LD_INTO_IMM_OFFSET:
-        m_memory.write(0xFF00 + m_lo, A());
+        write(0xFF00 + m_lo, A());
         break;
     case inst_type_t::LD_FROM_IMM_OFFSET:
-        A() = m_memory.read(0xFF00 + m_lo);
+        A() = read(0xFF00 + m_lo);
         break;
     case inst_type_t::LD_INTO_IMM:
-        m_memory.write(n16(), A());
+        write(n16(), A());
         break;
     case inst_type_t::LD_FROM_IMM:
-        A() = m_memory.read(n16());
+        A() = read(n16());
         break;
     case inst_type_t::LD_INTO_C_OFFSET:
-        m_memory.write(0xFF00 + C(), A());
+        write(0xFF00 + C(), A());
         break;
     case inst_type_t::LD_FROM_C_OFFSET:
-        A() = m_memory.read(0xFF00 + C());
+        A() = read(0xFF00 + C());
         break;
     /*case inst_type_t::RLCA:
         break;
@@ -317,10 +348,13 @@ void cpu_t::execute() {
         break;
     */
     case inst_type_t::LD_HL:
-        m_memory.write(HL(), r8y());
+        write(HL(), r8y());
         break;
     case inst_type_t::LD8:
         r8x() = m_lo;
+        break;
+    case inst_type_t::LD8_HL:
+        write(HL(), m_lo);
         break;
     case inst_type_t::INC:
         r8x()++;
@@ -344,16 +378,16 @@ void cpu_t::execute() {
         r16x() = n16();
         break;
     case inst_type_t::PUSH:
-        m_memory.write(--SP(), split_reg(r16x(), true));
-        m_memory.write(--SP(), split_reg(r16x(), false));
+        write(--SP(), split_reg(r16x(), true));
+        write(--SP(), split_reg(r16x(), false));
         break;
     case inst_type_t::POP:
-        split_reg(r16x(), false) = m_memory.read(SP()++);
-        split_reg(r16x(), true) = m_memory.read(SP()++);
+        split_reg(r16x(), false) = read(SP()++);
+        split_reg(r16x(), true) = read(SP()++);
         break;
     case inst_type_t::RET:
-        split_reg(PC(), false) = m_memory.read(SP()++);
-        split_reg(PC(), true) = m_memory.read(SP()++);
+        split_reg(PC(), false) = read(SP()++);
+        split_reg(PC(), true) = read(SP()++);
         break;
     case inst_type_t::XOR:
         A() ^= r8y();
@@ -384,18 +418,18 @@ void cpu_t::execute() {
         setC(1);
         break;
     case inst_type_t::CALL:
-        m_memory.write(--SP(), split_reg(PC(), true));
-        m_memory.write(--SP(), split_reg(PC(), false));
+        write(--SP(), split_reg(PC(), true));
+        write(--SP(), split_reg(PC(), false));
         PC() = n16();
         break;
     case inst_type_t::CP_IMM:
         alu_cp(m_lo);
         break;
     case inst_type_t::CP_HL:
-        alu_cp(m_memory.read(HL()));
+        alu_cp(read(HL()));
         break;
     case inst_type_t::ADD_HL:
-        alu_add(m_memory.read(HL()));
+        alu_add(read(HL()));
         break;
     case inst_type_t::DI:
         m_IME = false;

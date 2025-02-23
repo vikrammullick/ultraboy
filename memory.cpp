@@ -23,6 +23,11 @@ bool supported(uint16_t addr) {
         return true;
     }
 
+    if (addr == 0xFF01 || addr == 0xFF02) {
+        // TODO: serial
+        return true;
+    }
+
     if (addr >= 0xFF10 && addr <= 0xFF26) {
         // TODO: audio
         return true;
@@ -39,7 +44,7 @@ bool supported(uint16_t addr) {
 
     if (addr >= 0xFEA0 && addr <= 0xFEFF) {
         // nintendo prohibited
-        assert(false);
+        return false;
     }
 
     cout << "addr " << hex << addr << endl;
@@ -48,9 +53,10 @@ bool supported(uint16_t addr) {
 }
 
 bool ppu_addr(uint16_t addr) {
-    if (addr == constants::LCDC || addr == constants::SCY ||
-        addr == constants::SCX || addr == constants::LY ||
-        addr == constants::BGP) {
+    if (addr == constants::LCDC || addr == constants::STAT ||
+        addr == constants::SCY || addr == constants::SCX ||
+        addr == constants::LY || addr == constants::BGP ||
+        addr == constants::OBP0 || addr == constants::OBP1) {
         return true;
     }
 
@@ -60,6 +66,10 @@ bool ppu_addr(uint16_t addr) {
     }
 
     if (addr >= constants::TILE_MAP_START && addr <= constants::TILE_MAP_END) {
+        return true;
+    }
+
+    if (addr >= constants::OAM_START && addr <= constants::OAM_END) {
         return true;
     }
 

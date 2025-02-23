@@ -26,6 +26,11 @@ void ppu_t::write(uint16_t addr, uint8_t val) {
         return;
     }
 
+    if (addr == constants::STAT) {
+        m_STAT = val & 0b11111100;
+        return;
+    }
+
     if (addr == constants::SCY) {
         m_SCY = val;
         return;
@@ -46,6 +51,16 @@ void ppu_t::write(uint16_t addr, uint8_t val) {
         return;
     }
 
+    if (addr == constants::OBP0) {
+        m_OBP0 = val;
+        return;
+    }
+
+    if (addr == constants::OBP1) {
+        m_OBP1 = val;
+        return;
+    }
+
     if (addr >= constants::TILE_DATA_START &&
         addr <= constants::TILE_DATA_END) {
         m_tile_data[addr - constants::TILE_DATA_START] = val;
@@ -54,6 +69,11 @@ void ppu_t::write(uint16_t addr, uint8_t val) {
 
     if (addr >= constants::TILE_MAP_START && addr <= constants::TILE_MAP_END) {
         m_tile_map[addr - constants::TILE_MAP_START] = val;
+        return;
+    }
+
+    if (addr >= constants::OAM_START && addr <= constants::OAM_END) {
+        m_oam[addr - constants::OAM_START] = val;
         return;
     }
 
@@ -66,6 +86,11 @@ uint8_t ppu_t::read(uint16_t addr) {
         return m_LCDC;
     }
 
+    if (addr == constants::STAT) {
+        // TODO: set lower bits correctly (LY = LYC and PPU mode)
+        return m_STAT;
+    }
+
     if (addr == constants::SCY) {
         return m_SCY;
     }
@@ -75,12 +100,19 @@ uint8_t ppu_t::read(uint16_t addr) {
     }
 
     if (addr == constants::LY) {
-        // TODO: set this properly by ppu
         return m_LY;
     }
 
     if (addr == constants::BGP) {
         return m_BGP;
+    }
+
+    if (addr == constants::OBP0) {
+        return m_OBP0;
+    }
+
+    if (addr == constants::OBP1) {
+        return m_OBP1;
     }
 
     if (addr >= constants::TILE_DATA_START &&
@@ -90,6 +122,10 @@ uint8_t ppu_t::read(uint16_t addr) {
 
     if (addr >= constants::TILE_MAP_START && addr <= constants::TILE_MAP_END) {
         return m_tile_map[addr - constants::TILE_MAP_START];
+    }
+
+    if (addr >= constants::OAM_START && addr <= constants::OAM_END) {
+        return m_oam[addr - constants::OAM_START];
     }
 
     cout << "addr " << hex << addr << endl;

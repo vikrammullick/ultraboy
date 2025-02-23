@@ -13,7 +13,7 @@ TARGET := ultraboy
 all: $(TARGET)
 
 run: all
-	./ultraboy roms/tetris.gb
+	./ultraboy roms/cpu_instrs.gb
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2

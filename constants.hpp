@@ -15,12 +15,18 @@ constexpr uint8_t PREFIX = 0xCB;
 
 constexpr uint16_t BOOT_ROM_DISABLE = 0xFF50;
 
+constexpr uint16_t IF = 0xFF0F;
+constexpr uint16_t IE = 0xFFFF;
+
 // ppu constants
 constexpr uint16_t LCDC = 0xFF40;
+constexpr uint16_t STAT = 0xFF41;
 constexpr uint16_t SCY = 0xFF42;
 constexpr uint16_t SCX = 0xFF43;
 constexpr uint16_t LY = 0xFF44;
 constexpr uint16_t BGP = 0xFF47;
+constexpr uint16_t OBP0 = 0xFF48;
+constexpr uint16_t OBP1 = 0xFF49;
 
 constexpr uint16_t TILE_DATA_START = 0x8000;
 constexpr uint16_t TILE_DATA_END = 0x97FF;
@@ -28,6 +34,9 @@ constexpr uint32_t TILE_DATA_SIZE = TILE_DATA_END - TILE_DATA_START + 1;
 constexpr uint16_t TILE_MAP_START = 0x9800;
 constexpr uint16_t TILE_MAP_END = 0x9FFF;
 constexpr uint32_t TILE_MAP_SIZE = TILE_MAP_END - TILE_MAP_START + 1;
+constexpr uint16_t OAM_START = 0xFE00;
+constexpr uint16_t OAM_END = 0xFE9F;
+constexpr uint32_t OAM_SIZE = OAM_END - OAM_START + 1;
 
 constexpr uint32_t DISPLAY_SCALE = 1;
 
