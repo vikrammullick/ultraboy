@@ -27,10 +27,6 @@ enum inst_type_t {
     LD_FROM_IMM_OFFSET,
     LD_INTO_IMM,
     LD_FROM_IMM,
-    // RLCA,
-    RLA,
-    // RRCA,
-    // RRA,
     LD_HL,
     ADD,
     AND,
@@ -38,21 +34,44 @@ enum inst_type_t {
     OR,
     SUB,
     BIT,
-    RL,
-    SWAP,
     CALL,
     RST,
     PUSH,
     POP,
     RET,
     RETI,
+    ADD_IMM,
+    SUB_IMM,
     AND_IMM,
     CP_IMM,
     CP_HL,
     ADD_HL,
+    XOR_HL,
     CPL,
     DI,
-    EI
+    EI,
+
+    RLC,
+    RRC,
+    RL,
+    RR,
+    SLA,
+    SRA,
+    SWAP,
+    SRL,
+    RLC_HL,
+    RRC_HL,
+    RL_HL,
+    RR_HL,
+    SLA_HL,
+    SRA_HL,
+    SWAP_HL,
+    SRL_HL,
+
+    RLCA,
+    RRCA,
+    RLA,
+    RRA,
 };
 
 class cpu_t {
@@ -211,7 +230,19 @@ class cpu_t {
     void alu_cp(uint8_t operand);
     void alu_add(uint8_t operand);
     void alu_and(uint8_t operand);
+    void alu_sub(uint8_t operand);
+    void alu_xor(uint8_t operand);
+
     uint8_t alu_inc(uint8_t operand);
+
+    uint8_t alu_rlc(uint8_t operand);
+    uint8_t alu_rrc(uint8_t operand);
+    uint8_t alu_rl(uint8_t operand);
+    uint8_t alu_rr(uint8_t operand);
+    uint8_t alu_sla(uint8_t operand);
+    uint8_t alu_sra(uint8_t operand);
+    uint8_t alu_swap(uint8_t operand);
+    uint8_t alu_srl(uint8_t operand);
 
   public:
     cpu_t(memory_t &memory);

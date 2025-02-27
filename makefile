@@ -13,7 +13,7 @@ TARGET := ultraboy
 all: $(TARGET)
 
 run: all
-	./ultraboy roms/cpu_instrs.gb
+	./ultraboy roms/10.gb
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2

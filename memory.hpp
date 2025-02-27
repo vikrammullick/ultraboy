@@ -17,7 +17,7 @@ class memory_t {
     std::vector<char> m_boot;
     std::vector<char> m_rom;
 
-    bool m_boot_rom_disable = false;
+    bool m_boot_rom_disable = true;
 
     uint8_t m_keyboard;
 

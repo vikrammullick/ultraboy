@@ -9,7 +9,7 @@ constexpr uint32_t MEM_SIZE = 1 << 16;
 
 constexpr uint64_t NANOS_PER_TICK = 238; // 4.194 MHz
 
-constexpr uint16_t PC_START = 0x0000;
+constexpr uint16_t PC_START = 0x0100;
 
 constexpr uint8_t PREFIX = 0xCB;
 
