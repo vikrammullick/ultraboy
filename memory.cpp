@@ -47,7 +47,8 @@ bool supported(uint16_t addr) {
         return true;
     }
 
-    if (addr == 0xFF7F) {
+    // TODO: properly address unmapped hardware registers
+    if ((addr >= 0xFF51 && addr <= 0xFF7F) || addr == 0xFF4F) {
         return true;
     }
 

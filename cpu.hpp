@@ -10,12 +10,7 @@ enum inst_type_t {
     JP_HL,
     LD8,
     LD8_HL,
-    INC,
-    INC_HL,
-    DEC,
-    INC16,
     ADD16,
-    DEC16,
     LD_REG_REG,
     LD_REG_FROM_HL,
     LD16,
@@ -38,6 +33,13 @@ enum inst_type_t {
     CPL,
     DI,
     EI,
+
+    INC,
+    INC_HL,
+    INC16,
+    DEC,
+    DEC_HL,
+    DEC16,
 
     ADD,
     ADC,
@@ -250,6 +252,7 @@ class cpu_t {
     void alu_cp(uint8_t operand);
 
     uint8_t alu_inc(uint8_t operand);
+    uint8_t alu_dec(uint8_t operand);
 
     uint8_t alu_rlc(uint8_t operand);
     uint8_t alu_rrc(uint8_t operand);

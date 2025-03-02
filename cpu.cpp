@@ -160,11 +160,6 @@ void cpu_t::set_inst_type() {
             }
             return;
         }
-        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x5 || opy() == 0xD) &&
-            m_opcode != 0x35) {
-            m_inst_type = inst_type_t::DEC;
-            return;
-        }
         if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x4 || opy() == 0xC)) {
             if (m_opcode != 0x34) {
                 m_inst_type = inst_type_t::INC;
@@ -177,12 +172,22 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::INC16;
             return;
         }
-        if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0x9) {
-            m_inst_type = inst_type_t::ADD16;
+
+        if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x5 || opy() == 0xD)) {
+            if (m_opcode != 0x35) {
+                m_inst_type = inst_type_t::DEC;
+            } else {
+                m_inst_type = inst_type_t::DEC_HL;
+            }
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0xB) {
             m_inst_type = inst_type_t::DEC16;
+            return;
+        }
+
+        if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0x9) {
+            m_inst_type = inst_type_t::ADD16;
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && opy() == 0x1) {
@@ -416,12 +421,7 @@ void cpu_t::decode() {
     case inst_type_t::LD_FROM_C_OFFSET:
     case inst_type_t::LD_HL:
     case inst_type_t::BIT:
-    case inst_type_t::INC:
-    case inst_type_t::INC_HL:
-    case inst_type_t::DEC:
-    case inst_type_t::INC16:
     case inst_type_t::ADD16:
-    case inst_type_t::DEC16:
     case inst_type_t::PUSH:
     case inst_type_t::POP:
     case inst_type_t::RET:
@@ -431,6 +431,13 @@ void cpu_t::decode() {
     case inst_type_t::CPL:
     case inst_type_t::RST:
     case inst_type_t::JP_HL:
+
+    case inst_type_t::INC:
+    case inst_type_t::INC_HL:
+    case inst_type_t::INC16:
+    case inst_type_t::DEC:
+    case inst_type_t::DEC_HL:
+    case inst_type_t::DEC16:
 
     case inst_type_t::RLC:
     case inst_type_t::RRC:
@@ -574,30 +581,12 @@ void cpu_t::execute() {
     case inst_type_t::LD8_HL:
         write(HL(), m_lo);
         break;
-    case inst_type_t::INC:
-        r8x() = alu_inc(r8x());
-        break;
-    case inst_type_t::INC_HL:
-        write(HL(), alu_inc(read(HL())));
-        break;
-    case inst_type_t::DEC:
-        r8x()--;
-        setZ(!r8x());
-        setN(1);
-        setH(r8x() & 0xF);
-        break;
-    case inst_type_t::INC16:
-        r16x()++;
-        break;
     case inst_type_t::ADD16:
         setH(((HL() & 0x0FFF) + (r16x() & 0x0FFF)) > 0x0FFF);
         setN(0);
         setC((static_cast<uint32_t>(HL()) + static_cast<uint32_t>(r16x())) >
              0xFFFF);
         HL() += r16x();
-        break;
-    case inst_type_t::DEC16:
-        r16x()--;
         break;
     case inst_type_t::LD16:
         r16x() = n16();
@@ -622,6 +611,26 @@ void cpu_t::execute() {
         split_reg(PC(), false) = read(SP()++);
         split_reg(PC(), true) = read(SP()++);
         break;
+
+    case inst_type_t::INC:
+        r8x() = alu_inc(r8x());
+        break;
+    case inst_type_t::INC_HL:
+        write(HL(), alu_inc(read(HL())));
+        break;
+    case inst_type_t::INC16:
+        r16x()++;
+        break;
+    case inst_type_t::DEC:
+        r8x() = alu_dec(r8x());
+        break;
+    case inst_type_t::DEC_HL:
+        write(HL(), alu_dec(read(HL())));
+        break;
+    case inst_type_t::DEC16:
+        r16x()--;
+        break;
+
     case inst_type_t::RLC:
         r8y() = alu_rlc(r8y());
         break;
@@ -670,6 +679,7 @@ void cpu_t::execute() {
     case inst_type_t::SRL_HL:
         write(HL(), alu_srl(read(HL())));
         break;
+
     case inst_type_t::RLCA:
         A() = alu_rlc(A());
         setZ(0);
@@ -711,6 +721,7 @@ void cpu_t::execute() {
         setN(1);
         setH(1);
         break;
+
     case inst_type_t::ADD:
         alu_add(r8y());
         break;
@@ -862,6 +873,13 @@ uint8_t cpu_t::alu_inc(uint8_t operand) {
     setZ(!operand);
     setN(0);
     setH(!(operand & 0xF));
+    return operand;
+}
+uint8_t cpu_t::alu_dec(uint8_t operand) {
+    operand--;
+    setZ(!operand);
+    setN(1);
+    setH(operand & 0xF);
     return operand;
 }
 
