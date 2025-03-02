@@ -28,11 +28,6 @@ enum inst_type_t {
     LD_INTO_IMM,
     LD_FROM_IMM,
     LD_HL,
-    ADD,
-    AND,
-    XOR,
-    OR,
-    SUB,
     BIT,
     CALL,
     RST,
@@ -40,16 +35,34 @@ enum inst_type_t {
     POP,
     RET,
     RETI,
-    ADD_IMM,
-    SUB_IMM,
-    AND_IMM,
-    CP_IMM,
-    CP_HL,
-    ADD_HL,
-    XOR_HL,
     CPL,
     DI,
     EI,
+
+    ADD,
+    ADC,
+    SUB,
+    SBC,
+    AND,
+    XOR,
+    OR,
+    CP,
+    ADD_HL,
+    ADC_HL,
+    SUB_HL,
+    SBC_HL,
+    AND_HL,
+    XOR_HL,
+    OR_HL,
+    CP_HL,
+    ADD_IMM,
+    ADC_IMM,
+    SUB_IMM,
+    SBC_IMM,
+    AND_IMM,
+    XOR_IMM,
+    OR_IMM,
+    CP_IMM,
 
     RLC,
     RRC,
@@ -227,11 +240,14 @@ class cpu_t {
 
     void call(uint16_t v);
 
-    void alu_cp(uint8_t operand);
     void alu_add(uint8_t operand);
-    void alu_and(uint8_t operand);
+    void alu_adc(uint8_t operand);
     void alu_sub(uint8_t operand);
+    void alu_sbc(uint8_t operand);
+    void alu_and(uint8_t operand);
     void alu_xor(uint8_t operand);
+    void alu_or(uint8_t operand);
+    void alu_cp(uint8_t operand);
 
     uint8_t alu_inc(uint8_t operand);
 

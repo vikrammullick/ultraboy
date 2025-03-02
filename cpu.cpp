@@ -259,40 +259,6 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::LD_HL;
             return;
         }
-        if (opx() == 0x8 && opy() < 0x8) {
-            if (opy() == 0x6) {
-                m_inst_type = inst_type_t::ADD_HL;
-            } else {
-                m_inst_type = inst_type_t::ADD;
-            }
-            return;
-        }
-        if (opx() == 0xA && opy() < 0x8 && opy() != 0x6) {
-            m_inst_type = inst_type_t::AND;
-            return;
-        }
-        if (opx() == 0xA && opy() >= 0x8) {
-            if (opy() != 0xE) {
-                m_inst_type = inst_type_t::XOR;
-            } else {
-                m_inst_type = inst_type_t::XOR_HL;
-            }
-            return;
-        }
-        if (opx() == 0xB && opy() < 0x8 && opy() != 0x6) {
-            m_inst_type = inst_type_t::OR;
-            return;
-        }
-        if (opx() == 0xB && opy() >= 0x8) {
-            if (opy() == 0xE) {
-                m_inst_type = inst_type_t::CP_HL;
-                return;
-            }
-        }
-        if (opx() == 0x9 && opy() < 0x8 && opy() != 0x6) {
-            m_inst_type = inst_type_t::SUB;
-            return;
-        }
         if (((opx() == 0xC || opx() == 0xD) &&
              (opy() == 0x4 || opy() == 0xC)) ||
             m_opcode == 0xCD) {
@@ -301,22 +267,6 @@ void cpu_t::set_inst_type() {
         }
         if ((opx() >= 0xC && opx() <= 0xF) && (opy() == 0x7 || opy() == 0xF)) {
             m_inst_type = inst_type_t::RST;
-            return;
-        }
-        if (m_opcode == 0xC6) {
-            m_inst_type = inst_type_t::ADD_IMM;
-            return;
-        }
-        if (m_opcode == 0xD6) {
-            m_inst_type = inst_type_t::SUB_IMM;
-            return;
-        }
-        if (m_opcode == 0xE6) {
-            m_inst_type = inst_type_t::AND_IMM;
-            return;
-        }
-        if (m_opcode == 0xFE) {
-            m_inst_type = inst_type_t::CP_IMM;
             return;
         }
         if (m_opcode == 0xF3) {
@@ -329,6 +279,103 @@ void cpu_t::set_inst_type() {
         }
         if (m_opcode == 0x2F) {
             m_inst_type = inst_type_t::CPL;
+            return;
+        }
+
+        if (opx() == 0x8 && opy() < 0x8) {
+            if (opy() == 0x6) {
+                m_inst_type = inst_type_t::ADD_HL;
+            } else {
+                m_inst_type = inst_type_t::ADD;
+            }
+            return;
+        }
+        if (opx() == 0x8 && opy() >= 0x8) {
+            if (opy() == 0xE) {
+                m_inst_type = inst_type_t::ADC_HL;
+            } else {
+                m_inst_type = inst_type_t::ADC;
+            }
+            return;
+        }
+        if (opx() == 0x9 && opy() < 0x8) {
+            if (opy() == 0x6) {
+                m_inst_type = inst_type_t::SUB_HL;
+            } else {
+                m_inst_type = inst_type_t::SUB;
+            }
+            return;
+        }
+        if (opx() == 0x9 && opy() >= 0x8) {
+            if (opy() == 0xE) {
+                m_inst_type = inst_type_t::SBC_HL;
+            } else {
+                m_inst_type = inst_type_t::SBC;
+            }
+            return;
+        }
+        if (opx() == 0xA && opy() < 0x8) {
+            if (opy() == 0x6) {
+                m_inst_type = inst_type_t::AND_HL;
+            } else {
+                m_inst_type = inst_type_t::AND;
+            }
+            return;
+        }
+        if (opx() == 0xA && opy() >= 0x8) {
+            if (opy() == 0xE) {
+                m_inst_type = inst_type_t::XOR_HL;
+            } else {
+                m_inst_type = inst_type_t::XOR;
+            }
+            return;
+        }
+        if (opx() == 0xB && opy() < 0x8) {
+            if (opy() == 0x6) {
+                m_inst_type = inst_type_t::OR_HL;
+            } else {
+                m_inst_type = inst_type_t::OR;
+            }
+            return;
+        }
+        if (opx() == 0xB && opy() >= 0x8) {
+            if (opy() == 0xE) {
+                m_inst_type = inst_type_t::CP_HL;
+            } else {
+                m_inst_type = inst_type_t::CP;
+            }
+            return;
+        }
+        if (m_opcode == 0xC6) {
+            m_inst_type = inst_type_t::ADD_IMM;
+            return;
+        }
+        if (m_opcode == 0xCE) {
+            m_inst_type = inst_type_t::ADC_IMM;
+            return;
+        }
+        if (m_opcode == 0xD6) {
+            m_inst_type = inst_type_t::SUB_IMM;
+            return;
+        }
+        if (m_opcode == 0xDE) {
+            m_inst_type = inst_type_t::SBC_IMM;
+            return;
+        }
+        if (m_opcode == 0xE6) {
+            m_inst_type = inst_type_t::AND_IMM;
+            return;
+        }
+        if (m_opcode == 0xEE) {
+            m_inst_type = inst_type_t::XOR_IMM;
+            return;
+        }
+        if (m_opcode == 0xF6) {
+            m_inst_type = inst_type_t::OR_IMM;
+            return;
+        }
+        if (m_opcode == 0xFE) {
+            m_inst_type = inst_type_t::CP_IMM;
             return;
         }
     }
@@ -368,11 +415,6 @@ void cpu_t::decode() {
     case inst_type_t::LD_INTO_C_OFFSET:
     case inst_type_t::LD_FROM_C_OFFSET:
     case inst_type_t::LD_HL:
-    case inst_type_t::ADD:
-    case inst_type_t::AND:
-    case inst_type_t::XOR:
-    case inst_type_t::OR:
-    case inst_type_t::SUB:
     case inst_type_t::BIT:
     case inst_type_t::INC:
     case inst_type_t::INC_HL:
@@ -384,14 +426,12 @@ void cpu_t::decode() {
     case inst_type_t::POP:
     case inst_type_t::RET:
     case inst_type_t::RETI:
-    case inst_type_t::CP_HL:
-    case inst_type_t::ADD_HL:
-    case inst_type_t::XOR_HL:
     case inst_type_t::DI:
     case inst_type_t::EI:
     case inst_type_t::CPL:
     case inst_type_t::RST:
     case inst_type_t::JP_HL:
+
     case inst_type_t::RLC:
     case inst_type_t::RRC:
     case inst_type_t::RL:
@@ -412,16 +452,38 @@ void cpu_t::decode() {
     case inst_type_t::RRCA:
     case inst_type_t::RLA:
     case inst_type_t::RRA:
+
+    case inst_type_t::ADD:
+    case inst_type_t::ADC:
+    case inst_type_t::SUB:
+    case inst_type_t::SBC:
+    case inst_type_t::AND:
+    case inst_type_t::XOR:
+    case inst_type_t::OR:
+    case inst_type_t::CP:
+    case inst_type_t::ADD_HL:
+    case inst_type_t::ADC_HL:
+    case inst_type_t::SUB_HL:
+    case inst_type_t::SBC_HL:
+    case inst_type_t::AND_HL:
+    case inst_type_t::XOR_HL:
+    case inst_type_t::OR_HL:
+    case inst_type_t::CP_HL:
         break;
     case inst_type_t::LD8:
     case inst_type_t::LD8_HL:
     case inst_type_t::JR:
     case inst_type_t::LD_INTO_IMM_OFFSET:
     case inst_type_t::LD_FROM_IMM_OFFSET:
-    case inst_type_t::CP_IMM:
+
     case inst_type_t::ADD_IMM:
+    case inst_type_t::ADC_IMM:
     case inst_type_t::SUB_IMM:
+    case inst_type_t::SBC_IMM:
     case inst_type_t::AND_IMM:
+    case inst_type_t::XOR_IMM:
+    case inst_type_t::OR_IMM:
+    case inst_type_t::CP_IMM:
         m_lo = read(PC()++);
         break;
     case inst_type_t::LD16:
@@ -560,25 +622,6 @@ void cpu_t::execute() {
         split_reg(PC(), false) = read(SP()++);
         split_reg(PC(), true) = read(SP()++);
         break;
-    case inst_type_t::ADD:
-        alu_add(r8y());
-        break;
-    case inst_type_t::AND:
-        alu_and(r8y());
-        break;
-    case inst_type_t::XOR:
-        alu_xor(r8y());
-        break;
-    case inst_type_t::OR:
-        A() |= r8y();
-        setZ(A() == 0);
-        setN(0);
-        setH(0);
-        setC(0);
-        break;
-    case inst_type_t::SUB:
-        alu_sub(r8y());
-        break;
     case inst_type_t::RLC:
         r8y() = alu_rlc(r8y());
         break;
@@ -657,27 +700,6 @@ void cpu_t::execute() {
     case inst_type_t::RST:
         call((opx() - 0xC) << 4 | (opy() - 0x7));
         break;
-    case inst_type_t::ADD_IMM:
-        alu_add(m_lo);
-        break;
-    case inst_type_t::SUB_IMM:
-        alu_sub(m_lo);
-        break;
-    case inst_type_t::AND_IMM:
-        alu_and(m_lo);
-        break;
-    case inst_type_t::CP_IMM:
-        alu_cp(m_lo);
-        break;
-    case inst_type_t::CP_HL:
-        alu_cp(read(HL()));
-        break;
-    case inst_type_t::ADD_HL:
-        alu_add(read(HL()));
-        break;
-    case inst_type_t::XOR_HL:
-        alu_xor(read(HL()));
-        break;
     case inst_type_t::DI:
         m_IME = false;
         break;
@@ -688,6 +710,78 @@ void cpu_t::execute() {
         A() = ~A();
         setN(1);
         setH(1);
+        break;
+    case inst_type_t::ADD:
+        alu_add(r8y());
+        break;
+    case inst_type_t::ADC:
+        alu_adc(r8y());
+        break;
+    case inst_type_t::SUB:
+        alu_sub(r8y());
+        break;
+    case inst_type_t::SBC:
+        alu_sbc(r8y());
+        break;
+    case inst_type_t::AND:
+        alu_and(r8y());
+        break;
+    case inst_type_t::XOR:
+        alu_xor(r8y());
+        break;
+    case inst_type_t::OR:
+        alu_or(r8y());
+        break;
+    case inst_type_t::CP:
+        alu_cp(r8y());
+        break;
+    case inst_type_t::ADD_HL:
+        alu_add(read(HL()));
+        break;
+    case inst_type_t::ADC_HL:
+        alu_adc(read(HL()));
+        break;
+    case inst_type_t::SUB_HL:
+        alu_sub(read(HL()));
+        break;
+    case inst_type_t::SBC_HL:
+        alu_sbc(read(HL()));
+        break;
+    case inst_type_t::AND_HL:
+        alu_and(read(HL()));
+        break;
+    case inst_type_t::XOR_HL:
+        alu_xor(read(HL()));
+        break;
+    case inst_type_t::OR_HL:
+        alu_or(read(HL()));
+        break;
+    case inst_type_t::CP_HL:
+        alu_cp(read(HL()));
+        break;
+    case inst_type_t::ADD_IMM:
+        alu_add(m_lo);
+        break;
+    case inst_type_t::ADC_IMM:
+        alu_adc(m_lo);
+        break;
+    case inst_type_t::SUB_IMM:
+        alu_sub(m_lo);
+        break;
+    case inst_type_t::SBC_IMM:
+        alu_sbc(m_lo);
+        break;
+    case inst_type_t::AND_IMM:
+        alu_and(m_lo);
+        break;
+    case inst_type_t::XOR_IMM:
+        alu_xor(m_lo);
+        break;
+    case inst_type_t::OR_IMM:
+        alu_or(m_lo);
+        break;
+    case inst_type_t::CP_IMM:
+        alu_cp(m_lo);
         break;
     default:
         throw std::runtime_error("unknown instruction type (execute)");
@@ -707,23 +801,17 @@ void cpu_t::alu_add(uint8_t operand) {
     A() += operand;
     setZ(A() == 0);
 }
-
-void cpu_t::alu_and(uint8_t operand) {
-    A() &= operand;
+void cpu_t::alu_adc(uint8_t operand) {
+    uint8_t carry = c() ? 1 : 0;
+    uint8_t lower_nibble_sum = carry + (A() & 0xF) + (operand & 0xF);
+    uint16_t total_sum =
+        static_cast<uint16_t>(A()) + static_cast<uint16_t>(operand) + carry;
+    A() = total_sum & 0xFF;
+    setH(lower_nibble_sum > 0xF);
+    setN(0);
+    setC(total_sum > 0xFF);
     setZ(A() == 0);
-    setN(1);
-    setH(0);
-    setC(1);
 }
-
-void cpu_t::alu_cp(uint8_t operand) {
-    setH((operand & 0xF) > (A() & 0xF));
-    setC(operand > A());
-    uint8_t temp_a = A() - operand;
-    setZ(temp_a == 0);
-    setN(1);
-}
-
 void cpu_t::alu_sub(uint8_t operand) {
     setH((operand & 0xF) > (A() & 0xF));
     setC(operand > A());
@@ -731,13 +819,42 @@ void cpu_t::alu_sub(uint8_t operand) {
     setZ(A() == 0);
     setN(1);
 }
-
+void cpu_t::alu_sbc(uint8_t operand) {
+    uint8_t carry = c() ? 1 : 0;
+    setH((operand & 0xF + carry) > (A() & 0xF));
+    setC((operand + carry) > A());
+    A() -= operand;
+    A() -= carry;
+    setZ(A() == 0);
+    setN(1);
+}
+void cpu_t::alu_and(uint8_t operand) {
+    A() &= operand;
+    setZ(A() == 0);
+    setN(1);
+    setH(0);
+    setC(1);
+}
 void cpu_t::alu_xor(uint8_t operand) {
     A() ^= operand;
     setZ(A() == 0);
     setN(0);
     setH(0);
     setC(0);
+}
+void cpu_t::alu_or(uint8_t operand) {
+    A() |= operand;
+    setZ(A() == 0);
+    setN(0);
+    setH(0);
+    setC(0);
+}
+void cpu_t::alu_cp(uint8_t operand) {
+    setH((operand & 0xF) > (A() & 0xF));
+    setC(operand > A());
+    uint8_t temp_a = A() - operand;
+    setZ(temp_a == 0);
+    setN(1);
 }
 
 uint8_t cpu_t::alu_inc(uint8_t operand) {
