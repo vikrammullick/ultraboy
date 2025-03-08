@@ -1,7 +1,35 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "memory.hpp"
+// TODO: revert
+#include "constants.hpp"
+#include "cpu/memory.hpp"
+#include <array>
+#include <iostream>
+
+struct cpu_state_t {
+    uint16_t pc;
+    uint16_t sp;
+    uint8_t a;
+    uint8_t b;
+    uint8_t c;
+    uint8_t d;
+    uint8_t e;
+    uint8_t f;
+    uint8_t h;
+    uint8_t l;
+
+    bool operator==(const cpu_state_t &) const = default;
+
+    friend std::ostream &operator<<(std::ostream &os, const cpu_state_t &s) {
+        return os << std::dec << "(" << "PC: " << int(s.pc)
+                  << "\n SP: " << int(s.sp) << "\n F: " << int(s.f)
+                  << "\n A: " << int(s.a) << "\n B: " << int(s.b)
+                  << "\n C: " << int(s.c) << "\n D: " << int(s.d)
+                  << "\n E: " << int(s.e) << "\n H: " << int(s.h)
+                  << "\n L: " << int(s.l) << ")";
+    }
+};
 
 enum inst_type_t {
     NOP,
@@ -269,6 +297,23 @@ class cpu_t {
     void tick();
 
     void request_vblank_interrupt() { m_IF |= 0b1; }
+
+    void load_state(cpu_state_t &state) {
+        PC() = state.pc;
+        SP() = state.sp;
+        A() = state.a;
+        B() = state.b;
+        C() = state.c;
+        D() = state.d;
+        E() = state.e;
+        F() = state.f;
+        H() = state.h;
+        L() = state.l;
+    }
+
+    cpu_state_t dump_state() {
+        return cpu_state_t{PC(), SP(), A(), B(), C(), D(), E(), F(), H(), L()};
+    }
 };
 
 #endif // CPU_H

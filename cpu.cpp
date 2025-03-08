@@ -10,27 +10,28 @@ cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {
 }
 
 uint8_t cpu_t::read(uint16_t addr) {
-    if (addr == constants::IF) {
-        return m_IF;
-    }
+    /*    if (addr == constants::IF) {
+            return m_IF;
+        }
 
-    if (addr == constants::IE) {
-        return m_IE;
-    }
+        if (addr == constants::IE) {
+            return m_IE;
+        }
 
-    if (addr == constants::TMA) {
-        return m_TMA;
-    }
+        if (addr == constants::TMA) {
+            return m_TMA;
+        }
 
-    if (addr == constants::TAC) {
-        return m_TAC;
-    }
+        if (addr == constants::TAC) {
+            return m_TAC;
+        }*/
 
     return m_memory.read(addr);
 }
 
 void cpu_t::write(uint16_t addr, uint8_t val) {
-    if (addr == constants::IF) {
+    /*
+     if (addr == constants::IF) {
         m_IF = val;
         return;
     }
@@ -48,7 +49,7 @@ void cpu_t::write(uint16_t addr, uint8_t val) {
     if (addr == constants::TAC) {
         m_TAC = val;
         return;
-    }
+    }*/
 
     m_memory.write(addr, val);
 }
@@ -405,8 +406,8 @@ void cpu_t::fetch() {
         m_opcode = read(PC()++);
     }
 
-    cout << hex << "pc: 0x" << m_fetch_pc << " opcode: 0x" << hex
-         << int(m_opcode) << endl;
+    // cout << hex << "pc: 0x" << m_fetch_pc << " opcode: 0x" << hex
+    //<< int(m_opcode) << endl;
     set_inst_type();
 }
 
@@ -842,9 +843,9 @@ void cpu_t::alu_sbc(uint8_t operand) {
 void cpu_t::alu_and(uint8_t operand) {
     A() &= operand;
     setZ(A() == 0);
-    setN(1);
-    setH(0);
-    setC(1);
+    setN(0);
+    setH(1);
+    setC(0);
 }
 void cpu_t::alu_xor(uint8_t operand) {
     A() ^= operand;
@@ -876,10 +877,10 @@ uint8_t cpu_t::alu_inc(uint8_t operand) {
     return operand;
 }
 uint8_t cpu_t::alu_dec(uint8_t operand) {
+    setH((operand & 0xF) == 0);
     operand--;
     setZ(!operand);
     setN(1);
-    setH(operand & 0xF);
     return operand;
 }
 
