@@ -48,6 +48,8 @@ bool do_single(const json &test) {
         cout << test["name"] << " " << registers_match << " " << mem_match
              << endl;
         cout << test << endl;
+        cout << initial << endl;
+        cout << expected << endl;
         cout << test_cpu.dump_state() << endl;
         return false;
     }
@@ -56,7 +58,7 @@ bool do_single(const json &test) {
 
 bool do_test(const string &test_path) {
     // TODO remove
-    if (test_path != "sm83/v1/1f.json")
+    if (test_path != "sm83/v1/cb 46.json" && false)
         return true;
 
     ifstream input_file(test_path);

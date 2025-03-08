@@ -51,7 +51,6 @@ enum inst_type_t {
     LD_INTO_IMM,
     LD_FROM_IMM,
     LD_HL,
-    BIT,
     CALL,
     RST,
     PUSH,
@@ -61,6 +60,13 @@ enum inst_type_t {
     CPL,
     DI,
     EI,
+
+    BIT,
+    BIT_HL,
+    RES,
+    RES_HL,
+    SET,
+    SET_HL,
 
     INC,
     INC_HL,
@@ -290,6 +296,10 @@ class cpu_t {
     uint8_t alu_sra(uint8_t operand);
     uint8_t alu_swap(uint8_t operand);
     uint8_t alu_srl(uint8_t operand);
+
+    void alu_bit(uint8_t operand);
+    uint8_t alu_res(uint8_t operand);
+    uint8_t alu_set(uint8_t operand);
 
   public:
     cpu_t(memory_t &memory);

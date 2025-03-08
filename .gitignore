@@ -1,4 +1,5 @@
 *.o
 ultraboy
+cpu/cpu_tb
 *.swp
 .DS_Store

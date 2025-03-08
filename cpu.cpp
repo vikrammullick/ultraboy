@@ -56,8 +56,28 @@ void cpu_t::write(uint16_t addr, uint8_t val) {
 
 void cpu_t::set_inst_type() {
     if (prefixed) {
-        if (opx() >= 0x4 && opx() <= 0x7 && (opy() & 0b111) != 0x6) {
-            m_inst_type = inst_type_t::BIT;
+        if (opx() >= 0x4 && opx() <= 0x7) {
+            if ((opy() & 0b111) == 0x6) {
+                m_inst_type = inst_type_t::BIT_HL;
+            } else {
+                m_inst_type = inst_type_t::BIT;
+            }
+            return;
+        }
+        if (opx() >= 0x8 && opx() <= 0xB) {
+            if ((opy() & 0b111) == 0x6) {
+                m_inst_type = inst_type_t::RES_HL;
+            } else {
+                m_inst_type = inst_type_t::RES;
+            }
+            return;
+        }
+        if (opx() >= 0xC && opx() <= 0xF) {
+            if ((opy() & 0b111) == 0x6) {
+                m_inst_type = inst_type_t::SET_HL;
+            } else {
+                m_inst_type = inst_type_t::SET;
+            }
             return;
         }
         if (opx() == 0x0 && opy() < 0x8) {
@@ -258,7 +278,7 @@ void cpu_t::set_inst_type() {
             return;
         }
         if (m_opcode == 0x1F) {
-            m_inst_type = inst_type_t::RRCA;
+            m_inst_type = inst_type_t::RRA;
             return;
         }
         if (opx() == 0x7 && opy() < 0x8 && opy() != 0x6) {
@@ -421,7 +441,6 @@ void cpu_t::decode() {
     case inst_type_t::LD_INTO_C_OFFSET:
     case inst_type_t::LD_FROM_C_OFFSET:
     case inst_type_t::LD_HL:
-    case inst_type_t::BIT:
     case inst_type_t::ADD16:
     case inst_type_t::PUSH:
     case inst_type_t::POP:
@@ -432,6 +451,13 @@ void cpu_t::decode() {
     case inst_type_t::CPL:
     case inst_type_t::RST:
     case inst_type_t::JP_HL:
+
+    case inst_type_t::BIT:
+    case inst_type_t::BIT_HL:
+    case inst_type_t::RES:
+    case inst_type_t::RES_HL:
+    case inst_type_t::SET:
+    case inst_type_t::SET_HL:
 
     case inst_type_t::INC:
     case inst_type_t::INC_HL:
@@ -642,7 +668,7 @@ void cpu_t::execute() {
         r8y() = alu_rl(r8y());
         break;
     case inst_type_t::RR:
-        r8y() = alu_rrc(r8y());
+        r8y() = alu_rr(r8y());
         break;
     case inst_type_t::SLA:
         r8y() = alu_sla(r8y());
@@ -697,11 +723,6 @@ void cpu_t::execute() {
         A() = alu_rr(A());
         setZ(0);
         break;
-    case inst_type_t::BIT:
-        setZ(!(r8y() & (1 << ((opx() - 0x4) * 2 + opy() / 8))));
-        setH(0);
-        setC(1);
-        break;
     case inst_type_t::CALL:
         if (!flag_cond()) {
             return;
@@ -721,6 +742,25 @@ void cpu_t::execute() {
         A() = ~A();
         setN(1);
         setH(1);
+        break;
+
+    case inst_type_t::BIT:
+        alu_bit(r8y());
+        break;
+    case inst_type_t::BIT_HL:
+        alu_bit(read(HL()));
+        break;
+    case inst_type_t::RES:
+        r8y() = alu_res(r8y());
+        break;
+    case inst_type_t::RES_HL:
+        write(HL(), alu_res(read(HL())));
+        break;
+    case inst_type_t::SET:
+        r8y() = alu_set(r8y());
+        break;
+    case inst_type_t::SET_HL:
+        write(HL(), alu_set(read(HL())));
         break;
 
     case inst_type_t::ADD:
@@ -833,7 +873,7 @@ void cpu_t::alu_sub(uint8_t operand) {
 }
 void cpu_t::alu_sbc(uint8_t operand) {
     uint8_t carry = c() ? 1 : 0;
-    setH((operand & 0xF + carry) > (A() & 0xF));
+    setH(((operand & 0xF) + carry) > (A() & 0xF));
     setC((operand + carry) > A());
     A() -= operand;
     A() -= carry;
@@ -955,6 +995,22 @@ uint8_t cpu_t::alu_srl(uint8_t operand) {
     setZ(operand == 0);
     setN(0);
     setH(0);
+    return operand;
+}
+
+void cpu_t::alu_bit(uint8_t operand) {
+    setZ(!(operand & (1 << ((opx() - 0x4) * 2 + opy() / 8))));
+    setN(0);
+    setH(1);
+}
+uint8_t cpu_t::alu_res(uint8_t operand) {
+    uint8_t bit = (opx() - 0x8) * 2 + opy() / 8;
+    operand &= ~(1 << bit);
+    return operand;
+}
+uint8_t cpu_t::alu_set(uint8_t operand) {
+    uint8_t bit = (opx() - 0xC) * 2 + opy() / 8;
+    operand |= (1 << bit);
     return operand;
 }
 
