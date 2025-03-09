@@ -161,8 +161,44 @@ void cpu_t::set_inst_type() {
             m_inst_type = inst_type_t::JP;
             return;
         }
+        if (m_opcode == 0x08) {
+            m_inst_type = inst_type_t::LD_SP_MEM;
+            return;
+        }
+        if (m_opcode == 0xE8) {
+            m_inst_type = inst_type_t::ADD_SP_IMM;
+            return;
+        }
         if (m_opcode == 0xE9) {
             m_inst_type = inst_type_t::JP_HL;
+            return;
+        }
+        if (m_opcode == 0xF8) {
+            m_inst_type = inst_type_t::LD_SP_SUM_IMM_HL;
+            return;
+        }
+        if (m_opcode == 0xF9) {
+            m_inst_type = inst_type_t::LD_HL_SP;
+            return;
+        }
+        if (m_opcode == 0x27) {
+            m_inst_type = inst_type_t::DAA;
+            return;
+        }
+        if (m_opcode == 0x37) {
+            m_inst_type = inst_type_t::SCF;
+            return;
+        }
+        if (m_opcode == 0x3F) {
+            m_inst_type = inst_type_t::CCF;
+            return;
+        }
+        if (m_opcode == 0x10) {
+            m_inst_type = inst_type_t::STOP;
+            return;
+        }
+        if (m_opcode == 0x76) {
+            m_inst_type = inst_type_t::HALT;
             return;
         }
         if (opx() >= 0x0 && opx() <= 0x3 && (opy() == 0x6 || opy() == 0xE)) {
@@ -503,6 +539,15 @@ void cpu_t::decode() {
     case inst_type_t::XOR_HL:
     case inst_type_t::OR_HL:
     case inst_type_t::CP_HL:
+
+    case inst_type_t::LD_HL_SP:
+
+    case inst_type_t::DAA:
+    case inst_type_t::SCF:
+    case inst_type_t::CCF:
+
+    case inst_type_t::STOP:
+    case inst_type_t::HALT:
         break;
     case inst_type_t::LD8:
     case inst_type_t::LD8_HL:
@@ -518,6 +563,9 @@ void cpu_t::decode() {
     case inst_type_t::XOR_IMM:
     case inst_type_t::OR_IMM:
     case inst_type_t::CP_IMM:
+
+    case inst_type_t::ADD_SP_IMM:
+    case inst_type_t::LD_SP_SUM_IMM_HL:
         m_lo = read(PC()++);
         break;
     case inst_type_t::LD16:
@@ -525,6 +573,7 @@ void cpu_t::decode() {
     case inst_type_t::LD_INTO_IMM:
     case inst_type_t::LD_FROM_IMM:
     case inst_type_t::JP:
+    case inst_type_t::LD_SP_MEM:
         m_lo = read(PC()++);
         m_hi = read(PC()++);
         break;
@@ -539,6 +588,8 @@ uint8_t &split_reg(uint16_t &reg, bool upper) {
 }
 
 void cpu_t::execute() {
+    int8_t signed_op = m_lo;
+
     switch (m_inst_type) {
     case inst_type_t::NOP:
         break;
@@ -549,7 +600,7 @@ void cpu_t::execute() {
         PC() = n16();
         break;
     case inst_type_t::JP_HL:
-        PC() = read(HL());
+        PC() = HL();
         break;
     case inst_type_t::JR:
         if (!flag_cond()) {
@@ -624,6 +675,7 @@ void cpu_t::execute() {
         break;
     case inst_type_t::POP:
         split_reg(r16x(), false) = read(SP()++);
+        F() = F() & 0b11110000;
         split_reg(r16x(), true) = read(SP()++);
         break;
     case inst_type_t::RET:
@@ -742,6 +794,66 @@ void cpu_t::execute() {
         A() = ~A();
         setN(1);
         setH(1);
+        break;
+
+    case inst_type_t::LD_SP_MEM:
+        write(n16(), SP() & 0xFF);
+        write(n16() + 1, SP() >> 8);
+        break;
+    case inst_type_t::LD_HL_SP:
+        SP() = HL();
+        break;
+    case inst_type_t::ADD_SP_IMM:
+        setH(((SP() & 0xF) + (signed_op & 0xF)) > 0xF);
+        setC(((SP() & 0xFF) + (signed_op & 0xFF)) > 0xFF);
+        setN(0);
+        setZ(0);
+        SP() += signed_op;
+        break;
+    case inst_type_t::LD_SP_SUM_IMM_HL:
+        setH(((SP() & 0xF) + (signed_op & 0xF)) > 0xF);
+        setC(((SP() & 0xFF) + (signed_op & 0xFF)) > 0xFF);
+        setN(0);
+        setZ(0);
+        HL() = SP() + signed_op;
+        break;
+
+    case inst_type_t::DAA:
+        if (!n()) {
+            if (c() || A() > 0x99) {
+                A() += 0x60;
+                setC(1);
+            }
+            if (h() || (A() & 0x0F) > 0x09) {
+                A() += 0x6;
+            }
+        } else {
+            if (c()) {
+                A() -= 0x60;
+            }
+            if (h()) {
+                A() -= 0x6;
+            }
+        }
+        setZ(A() == 0);
+        setH(0);
+        break;
+    case inst_type_t::SCF:
+        setN(0);
+        setH(0);
+        setC(1);
+        break;
+    case inst_type_t::CCF:
+        setN(0);
+        setH(0);
+        setC(!c());
+        break;
+
+    case inst_type_t::STOP:
+        // TODO
+        break;
+    case inst_type_t::HALT:
+        // TODO
         break;
 
     case inst_type_t::BIT:

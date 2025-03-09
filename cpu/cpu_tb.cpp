@@ -58,7 +58,7 @@ bool do_single(const json &test) {
 
 bool do_test(const string &test_path) {
     // TODO remove
-    if (test_path != "sm83/v1/cb 46.json" && false)
+    if (test_path != "sm83/v1/08.json" && false)
         return true;
 
     ifstream input_file(test_path);

@@ -61,6 +61,18 @@ enum inst_type_t {
     DI,
     EI,
 
+    LD_SP_MEM,
+    ADD_SP_IMM,
+    LD_SP_SUM_IMM_HL,
+    LD_HL_SP,
+
+    DAA,
+    SCF,
+    CCF,
+
+    STOP,
+    HALT,
+
     BIT,
     BIT_HL,
     RES,
