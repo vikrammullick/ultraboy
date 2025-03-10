@@ -5,6 +5,7 @@
 
 #include <array>
 #include <cstdint>
+#include <vector>
 
 class ppu_t {
     uint8_t m_LCDC = 0;
@@ -21,9 +22,9 @@ class ppu_t {
     uint32_t m_ticks = 0;
     bool m_vblank_interrupt = false;
 
-    std::array<uint8_t, constants::TILE_DATA_SIZE> m_tile_data{};
-    std::array<uint8_t, constants::TILE_MAP_SIZE> m_tile_map{};
-    std::array<uint8_t, constants::OAM_SIZE> m_oam{};
+    std::vector<uint8_t> m_tile_data;
+    std::vector<uint8_t> m_tile_map;
+    std::vector<uint8_t> m_oam;
 
     bool ppu_enable() { return m_LCDC & (1 << 7); }
     bool bg_win_tile_data_area() { return m_LCDC & (1 << 4); }

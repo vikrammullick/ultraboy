@@ -5,7 +5,11 @@
 
 using namespace std;
 
-ppu_t::ppu_t() {}
+ppu_t::ppu_t() {
+    m_tile_data = std::vector<uint8_t>(constants::TILE_DATA_SIZE, 0);
+    m_tile_map = std::vector<uint8_t>(constants::TILE_MAP_SIZE, 0);
+    m_oam = std::vector<uint8_t>(constants::OAM_SIZE, 0);
+}
 
 void ppu_t::tick() {
     if (!ppu_enable()) {

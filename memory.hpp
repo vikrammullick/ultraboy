@@ -11,7 +11,7 @@
 // TODO: rename to address decoder
 class memory_t {
     // TODO: move into external memory
-    std::array<uint8_t, constants::MEM_SIZE> m_data{};
+    std::vector<uint8_t> m_data;
 
     // TODO: move into cartridge_t
     std::vector<char> m_boot;

@@ -5,7 +5,11 @@ using namespace std;
 memory_t::memory_t(const vector<char> &boot_bytes,
                    const vector<char> &rom_bytes,
                    ppu_t &ppu)
-    : m_boot(boot_bytes), m_rom(rom_bytes), m_ppu(ppu) {}
+    : m_boot(boot_bytes), m_rom(rom_bytes), m_ppu(ppu) {
+    m_data = std::vector<uint8_t>(constants::MEM_SIZE, 0);
+
+    cout << int(rom_bytes[0x147]) << endl;
+}
 
 bool supported(uint16_t addr) {
     if (addr <= 0x7FFF) {

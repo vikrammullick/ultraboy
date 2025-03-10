@@ -10,28 +10,27 @@ cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {
 }
 
 uint8_t cpu_t::read(uint16_t addr) {
-    /*    if (addr == constants::IF) {
-            return m_IF;
-        }
+    if (addr == constants::IF) {
+        return m_IF;
+    }
 
-        if (addr == constants::IE) {
-            return m_IE;
-        }
+    if (addr == constants::IE) {
+        return m_IE;
+    }
 
-        if (addr == constants::TMA) {
-            return m_TMA;
-        }
+    if (addr == constants::TMA) {
+        return m_TMA;
+    }
 
-        if (addr == constants::TAC) {
-            return m_TAC;
-        }*/
+    if (addr == constants::TAC) {
+        return m_TAC;
+    }
 
     return m_memory.read(addr);
 }
 
 void cpu_t::write(uint16_t addr, uint8_t val) {
-    /*
-     if (addr == constants::IF) {
+    if (addr == constants::IF) {
         m_IF = val;
         return;
     }
@@ -49,7 +48,7 @@ void cpu_t::write(uint16_t addr, uint8_t val) {
     if (addr == constants::TAC) {
         m_TAC = val;
         return;
-    }*/
+    }
 
     m_memory.write(addr, val);
 }
@@ -851,9 +850,11 @@ void cpu_t::execute() {
 
     case inst_type_t::STOP:
         // TODO
+        assert(false);
         break;
     case inst_type_t::HALT:
         // TODO
+        assert(false);
         break;
 
     case inst_type_t::BIT:

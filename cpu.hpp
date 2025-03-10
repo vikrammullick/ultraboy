@@ -3,7 +3,7 @@
 
 // TODO: revert
 #include "constants.hpp"
-#include "cpu/memory.hpp"
+#include "memory.hpp"
 #include <array>
 #include <iostream>
 
@@ -142,7 +142,7 @@ class cpu_t {
 
     memory_t &m_memory;
 
-    std::array<uint8_t, 12> m_reg_file;
+    std::array<uint8_t, 12> m_reg_file{};
 
     bool m_IME = false;
     bool m_pending_IME = false;

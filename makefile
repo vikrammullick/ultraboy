@@ -13,7 +13,7 @@ TARGET := ultraboy
 all: $(TARGET)
 
 run: all
-	./ultraboy roms/10.gb
+	./ultraboy roms/drmario.gb
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2
