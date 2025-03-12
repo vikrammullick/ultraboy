@@ -9,6 +9,16 @@ cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {
     PC() = constants::PC_START;
 }
 
+uint8_t cpu_t::read_next_PC() {
+    uint8_t out = read(PC());
+    if (m_halt_bug) {
+        m_halt_bug = false;
+    } else {
+        PC()++;
+    }
+    return out;
+}
+
 uint8_t cpu_t::read(uint16_t addr) {
     m_tick_timer();
 
@@ -476,10 +486,10 @@ void cpu_t::set_inst_type() {
 void cpu_t::fetch() {
     m_fetch_pc = PC();
 
-    m_opcode = read(PC()++);
+    m_opcode = read_next_PC();
     prefixed = m_opcode == constants::PREFIX;
     if (prefixed) {
-        m_opcode = read(PC()++);
+        m_opcode = read_next_PC();
     }
 
     // cout << hex << "pc: 0x" << m_fetch_pc << " opcode: 0x" << hex
@@ -586,7 +596,7 @@ void cpu_t::decode() {
 
     case inst_type_t::ADD_SP_IMM:
     case inst_type_t::LD_SP_SUM_IMM_HL:
-        m_lo = read(PC()++);
+        m_lo = read_next_PC();
         break;
     case inst_type_t::LD16:
     case inst_type_t::CALL:
@@ -594,8 +604,8 @@ void cpu_t::decode() {
     case inst_type_t::LD_FROM_IMM:
     case inst_type_t::JP:
     case inst_type_t::LD_SP_MEM:
-        m_lo = read(PC()++);
-        m_hi = read(PC()++);
+        m_lo = read_next_PC();
+        m_hi = read_next_PC();
         break;
     default:
         throw std::runtime_error("unknown instruction type (decode)");
@@ -874,8 +884,8 @@ void cpu_t::execute() {
         assert(false);
         break;
     case inst_type_t::HALT:
-        // TODO
-        assert(false);
+        m_halt_bug = !m_IME & (m_IE & m_IF);
+        m_halted = true;
         break;
 
     case inst_type_t::BIT:
@@ -1149,6 +1159,10 @@ uint8_t cpu_t::alu_set(uint8_t operand) {
 }
 
 void cpu_t::tick() {
+    if (m_IE & m_IF) {
+        m_halted = false;
+    }
+
     if (m_IME) {
         for (size_t i = 0; i <= 4; ++i) {
             if (m_IE & m_IF & (1 << i)) {
@@ -1164,6 +1178,11 @@ void cpu_t::tick() {
     if (m_pending_IME) {
         m_IME = true;
         m_pending_IME = false;
+    }
+
+    if (m_halted) {
+        m_tick_timer();
+        return;
     }
 
     fetch();

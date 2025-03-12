@@ -181,6 +181,10 @@ class cpu_t {
 
     void m_tick_timer();
 
+    bool m_halted = false;
+    bool m_halt_bug = false;
+    uint8_t read_next_PC();
+
     uint8_t m_lo;
     uint8_t m_hi;
 
