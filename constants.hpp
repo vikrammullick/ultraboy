@@ -19,6 +19,8 @@ constexpr uint16_t IF = 0xFF0F;
 constexpr uint16_t IE = 0xFFFF;
 
 // timer and div
+constexpr uint16_t DIV = 0xFF04;
+constexpr uint16_t TIMA = 0xFF05;
 constexpr uint16_t TMA = 0xFF06;
 constexpr uint16_t TAC = 0xFF07;
 

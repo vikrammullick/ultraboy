@@ -10,12 +10,22 @@ cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {
 }
 
 uint8_t cpu_t::read(uint16_t addr) {
+    m_tick_timer();
+
     if (addr == constants::IF) {
         return m_IF;
     }
 
     if (addr == constants::IE) {
         return m_IE;
+    }
+
+    if (addr == constants::DIV) {
+        return div();
+    }
+
+    if (addr == constants::TIMA) {
+        return m_TIMA;
     }
 
     if (addr == constants::TMA) {
@@ -30,6 +40,8 @@ uint8_t cpu_t::read(uint16_t addr) {
 }
 
 void cpu_t::write(uint16_t addr, uint8_t val) {
+    m_tick_timer();
+
     if (addr == constants::IF) {
         m_IF = val;
         return;
@@ -37,6 +49,16 @@ void cpu_t::write(uint16_t addr, uint8_t val) {
 
     if (addr == constants::IE) {
         m_IE = val;
+        return;
+    }
+
+    if (addr == constants::DIV) {
+        m_system_counter = 0;
+        return;
+    }
+
+    if (addr == constants::TIMA) {
+        m_TIMA = val;
         return;
     }
 
@@ -449,7 +471,6 @@ void cpu_t::set_inst_type() {
     oss << "0x" << static_cast<uint16_t>(m_opcode);
     cout << oss.str() << endl;
     // throw std::runtime_error(oss.str());
-    m_failed = true;
 }
 
 void cpu_t::fetch() {
@@ -685,7 +706,7 @@ void cpu_t::execute() {
         split_reg(PC(), true) = read(SP()++);
         break;
     case inst_type_t::RETI:
-        m_IME = true;
+        m_pending_IME = true;
         split_reg(PC(), false) = read(SP()++);
         split_reg(PC(), true) = read(SP()++);
         break;
@@ -1128,20 +1149,42 @@ uint8_t cpu_t::alu_set(uint8_t operand) {
 }
 
 void cpu_t::tick() {
+    if (m_IME) {
+        for (size_t i = 0; i <= 4; ++i) {
+            if (m_IE & m_IF & (1 << i)) {
+                m_IME = false;
+                m_IF &= ~(1 << i);
+                // TODO: wait 2 M cycles
+                call(0x40 + (0x08 * i));
+                return;
+            }
+        }
+    }
+
     if (m_pending_IME) {
         m_IME = true;
         m_pending_IME = false;
     }
 
-    if (m_failed) {
-        return;
-    }
     fetch();
-    if (m_failed) {
-        return;
-    }
     decode();
     execute();
+}
 
-    // TODO: service interrupt requests
+void cpu_t::m_tick_timer() {
+    if (m_timer_overflow) {
+        m_TIMA = m_TMA;
+        m_IF |= (1 << 2);
+        m_timer_overflow = false;
+    }
+
+    // incremented once per m cycle
+    m_system_counter++;
+    uint8_t selected_count = clock_select_count();
+    if (m_last_selected_count && !selected_count) {
+        if (!++m_TIMA) {
+            m_timer_overflow = true;
+        }
+    }
+    m_last_selected_count = selected_count;
 }

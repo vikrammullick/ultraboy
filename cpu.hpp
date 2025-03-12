@@ -136,8 +136,6 @@ enum inst_type_t {
 };
 
 class cpu_t {
-    // TODO: temporary to aid in development
-    bool m_failed = false;
     uint16_t m_fetch_pc;
 
     memory_t &m_memory;
@@ -149,8 +147,39 @@ class cpu_t {
     uint8_t m_IF = 0;
     uint8_t m_IE = 0;
 
+    uint16_t m_system_counter = 0;
+    uint8_t div() { return m_system_counter >> 6; }
+
+    uint8_t m_TIMA = 0;
     uint8_t m_TMA = 0;
+
     uint8_t m_TAC = 0;
+    bool tac_enabled() { return m_TAC & (1 << 2); }
+    uint8_t tac_clock_select() { return m_TAC & 0b11; }
+    uint8_t clock_select_count() {
+        if (!tac_enabled()) {
+            return 0;
+        }
+        if (tac_clock_select() == 0) {
+            return m_system_counter & 0b11111111;
+        }
+        if (tac_clock_select() == 3) {
+            return m_system_counter & 0b00111111;
+        }
+        if (tac_clock_select() == 2) {
+            return m_system_counter & 0b00001111;
+        }
+        if (tac_clock_select() == 1) {
+            return m_system_counter & 0b00000011;
+        }
+        assert(false);
+    }
+
+    uint8_t m_last_selected_count = 0;
+
+    bool m_timer_overflow = false;
+
+    void m_tick_timer();
 
     uint8_t m_lo;
     uint8_t m_hi;

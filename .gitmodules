@@ -1,3 +1,6 @@
 [submodule "cpu/sm83"]
 	path = cpu/sm83
 	url = git@github.com:SingleStepTests/sm83.git
+[submodule "roms/gb-test-roms"]
+	path = roms/gb-test-roms
+	url = git@github.com:retrio/gb-test-roms.git
