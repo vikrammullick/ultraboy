@@ -33,8 +33,7 @@ void cpu_t::tick() {
     // fetch
     uint16_t inst = read_pc_halfword();
 
-    uint8_t opcode_u8 = inst >> 10;
-    op_type_t opcode = static_cast<op_type_t>(opcode_u8);
+    op_type_t opcode = static_cast<op_type_t>(inst >> 10);
 
     std::bitset<5> five_0 = (inst >> 5) & 0b11111;
     std::bitset<5> five_1 = (inst >> 0) & 0b11111;
@@ -42,7 +41,7 @@ void cpu_t::tick() {
     auto &reg2 = m_state.regs[five_0.to_ulong()];
     auto &reg1 = m_state.regs[five_1.to_ulong()];
 
-    std::bitset<16> imm;
+    uint16_t imm;
 
     switch (opcode) {
     case op_type_t::MOV_010000:
@@ -53,7 +52,11 @@ void cpu_t::tick() {
         break;
     case op_type_t::MOVEA_101000:
         imm = read_pc_halfword();
-        reg2 = reg1 + sign_extend(imm);
+        reg2 = reg1 + sign_extend(std::bitset<16>(imm));
+        break;
+    case op_type_t::MOVHI_101111:
+        imm = read_pc_halfword();
+        reg2 = reg1 + (imm << 16);
         break;
     default:
         assert(false);
