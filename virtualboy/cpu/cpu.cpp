@@ -31,10 +31,17 @@ int32_t sign_extend_8(uint8_t value) {
     return sign_extend(std::bitset<8>(value));
 }
 
-uint16_t cpu_t::read_pc_halfword() {
-    uint8_t lo = m_memory.read(m_state.pc++);
-    uint8_t hi = m_memory.read(m_state.pc++);
+uint16_t cpu_t::read_halfword(uint32_t addr) {
+    addr &= 0xFFFFFFFE;
+    uint8_t lo = m_memory.read(addr);
+    uint8_t hi = m_memory.read(addr + 1);
     return (hi << 8) + lo;
+}
+
+uint16_t cpu_t::read_pc_halfword() {
+    uint16_t ret = read_halfword(m_state.pc);
+    m_state.pc += 2;
+    return ret;
 }
 
 void cpu_t::tick() {
@@ -65,10 +72,19 @@ void cpu_t::tick() {
     case op_type_t::INB_111000:
         reg2 = m_memory.read(reg1 + sign_extend_16(read_pc_halfword()));
         break;
+    case op_type_t::INH_111001: {
+        reg2 = read_halfword(reg1 + sign_extend_16(read_pc_halfword()));
+        break;
+    }
     case op_type_t::LDB_110000:
         reg2 = sign_extend_8(
             m_memory.read(reg1 + sign_extend_16(read_pc_halfword())));
         break;
+    case op_type_t::LDH_110001: {
+        reg2 = sign_extend_16(
+            read_halfword(reg1 + sign_extend_16(read_pc_halfword())));
+        break;
+    }
     default:
         assert(false);
     }
