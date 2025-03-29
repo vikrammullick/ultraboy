@@ -4,6 +4,7 @@
 #include "memory.hpp"
 
 #include <array>
+#include <bitset>
 
 struct cpu_state_t {
     uint32_t pc;
@@ -18,6 +19,7 @@ struct cpu_state_t {
 };
 
 enum class op_type_t : uint8_t {
+    MOV_010000 = 0b010000,
     MOV_000000 = 0b000000,
 };
 
