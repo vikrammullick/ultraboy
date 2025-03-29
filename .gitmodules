@@ -4,3 +4,12 @@
 [submodule "roms/gb-test-roms"]
 	path = roms/gb-test-roms
 	url = git@github.com:retrio/gb-test-roms.git
+[submodule "gameboy/roms/gb-test-roms"]
+	path = gameboy/roms/gb-test-roms
+	url = git@github.com:retrio/gb-test-roms.git
+[submodule "gameboy/roms/mooneye-test-suite"]
+	path = gameboy/roms/mooneye-test-suite
+	url = git@github.com:Gekkio/mooneye-test-suite.git
+[submodule "gameboy/cpu/sm83"]
+	path = gameboy/cpu/sm83
+	url = git@github.com:SingleStepTests/sm83.git
