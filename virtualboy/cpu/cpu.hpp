@@ -23,6 +23,8 @@ enum class op_type_t : uint8_t {
     MOV_000000 = 0b000000,
     MOVEA_101000 = 0b101000,
     MOVHI_101111 = 0b101111,
+    INB_111000 = 0b111000,
+    LDB_110000 = 0b110000,
 };
 
 class cpu_t {
