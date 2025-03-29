@@ -21,6 +21,7 @@ struct cpu_state_t {
 enum class op_type_t : uint8_t {
     MOV_010000 = 0b010000,
     MOV_000000 = 0b000000,
+    MOVEA_101000 = 0b101000,
 };
 
 class cpu_t {
@@ -31,6 +32,8 @@ class cpu_t {
     cpu_t(memory_t &memory);
 
     void tick();
+
+    uint16_t read_pc_halfword();
 
     void load_state(const cpu_state_t &state) { m_state = state; }
 

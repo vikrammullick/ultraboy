@@ -23,11 +23,15 @@ template <size_t N> int32_t sign_extend(const std::bitset<N> &bits) {
     }
 }
 
+uint16_t cpu_t::read_pc_halfword() {
+    uint8_t lo = m_memory.read(m_state.pc++);
+    uint8_t hi = m_memory.read(m_state.pc++);
+    return (hi << 8) + lo;
+}
+
 void cpu_t::tick() {
     // fetch
-    uint8_t inst_lo = m_memory.read(m_state.pc++);
-    uint8_t inst_hi = m_memory.read(m_state.pc++);
-    uint16_t inst = (inst_hi << 8) + inst_lo;
+    uint16_t inst = read_pc_halfword();
 
     uint8_t opcode_u8 = inst >> 10;
     op_type_t opcode = static_cast<op_type_t>(opcode_u8);
@@ -38,12 +42,18 @@ void cpu_t::tick() {
     auto &reg2 = m_state.regs[five_0.to_ulong()];
     auto &reg1 = m_state.regs[five_1.to_ulong()];
 
+    std::bitset<16> imm;
+
     switch (opcode) {
     case op_type_t::MOV_010000:
         reg2 = sign_extend(five_1);
         break;
     case op_type_t::MOV_000000:
         reg2 = reg1;
+        break;
+    case op_type_t::MOVEA_101000:
+        imm = read_pc_halfword();
+        reg2 = reg1 + sign_extend(imm);
         break;
     default:
         assert(false);

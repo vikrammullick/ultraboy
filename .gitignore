@@ -1,5 +1,6 @@
 *.o
 ultraboy
-cpu/cpu_tb
+virtualboy/cpu/cpu_tb
+gameboy/cpu/cpu_tb
 *.swp
 .DS_Store

@@ -12,6 +12,7 @@ using json = nlohmann::json;
 using namespace std;
 
 std::ostream &operator<<(std::ostream &os, const memory_t &obj) {
+    os << std::hex;
     os << "{";
     bool first = true;
     for (const auto &[key, value] : obj.m_mem) {
@@ -89,9 +90,8 @@ bool do_single(const json &test) {
     bool mem_match = expected_memory == test_memory;
 
     if (!registers_match || !mem_match) {
-        cout << "got: " << test_memory << ", expected: " << expected_memory
-             << endl;
-        cout << "got: " << actual_state << ", expected: " << expected << endl;
+        cout << "got: \n" << test_memory << "\n" << actual_state << endl;
+        cout << "expected: \n" << expected_memory << "\n" << expected << endl;
         return false;
     }
     return true;
