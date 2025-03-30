@@ -23,10 +23,13 @@ enum class op_type_t : uint8_t {
     MOV_000000 = 0b000000,
     MOVEA_101000 = 0b101000,
     MOVHI_101111 = 0b101111,
+
     INB_111000 = 0b111000,
     INH_111001 = 0b111001,
+    INW_111011 = 0b111011,
     LDB_110000 = 0b110000,
     LDH_110001 = 0b110001,
+    LDW_110011 = 0b110011,
 };
 
 class cpu_t {
@@ -39,6 +42,7 @@ class cpu_t {
     void tick();
 
     uint16_t read_halfword(uint32_t addr);
+    uint32_t read_word(uint32_t addr);
     uint16_t read_pc_halfword();
 
     void load_state(const cpu_state_t &state) { m_state = state; }

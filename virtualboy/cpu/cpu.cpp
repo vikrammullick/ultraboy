@@ -38,6 +38,13 @@ uint16_t cpu_t::read_halfword(uint32_t addr) {
     return (hi << 8) + lo;
 }
 
+uint32_t cpu_t::read_word(uint32_t addr) {
+    addr &= 0xFFFFFFFC;
+    uint16_t lo = read_halfword(addr);
+    uint16_t hi = read_halfword(addr + 2);
+    return (hi << 16) + lo;
+}
+
 uint16_t cpu_t::read_pc_halfword() {
     uint16_t ret = read_halfword(m_state.pc);
     m_state.pc += 2;
@@ -83,6 +90,11 @@ void cpu_t::tick() {
     case op_type_t::LDH_110001: {
         reg2 = sign_extend_16(
             read_halfword(reg1 + sign_extend_16(read_pc_halfword())));
+        break;
+    }
+    case op_type_t::INW_111011:
+    case op_type_t::LDW_110011: {
+        reg2 = read_word(reg1 + sign_extend_16(read_pc_halfword()));
         break;
     }
     default:
