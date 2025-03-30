@@ -41,6 +41,7 @@ enum class op_type_t : uint8_t {
     ADD_010001 = 0b010001,
     ADD_000001 = 0b000001,
     ADDI_101001 = 0b101001,
+    CMP_010011 = 0b010011,
 };
 
 class cpu_t {
@@ -57,6 +58,7 @@ class cpu_t {
     uint16_t read_pc_halfword();
 
     uint32_t add(uint32_t op1, uint32_t op2);
+    uint32_t sub(uint32_t op1, uint32_t op2);
 
     void load_state(const cpu_state_t &state) { m_state = state; }
 
