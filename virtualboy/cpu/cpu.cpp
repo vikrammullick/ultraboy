@@ -142,6 +142,9 @@ void cpu_t::tick() {
     case op_type_t::CMP_010011:
         sub(reg2, sign_extend(five_1));
         break;
+    case op_type_t::CMP_000011:
+        sub(reg2, reg1);
+        break;
     default:
         assert(false);
     }
