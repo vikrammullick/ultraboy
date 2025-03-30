@@ -39,6 +39,7 @@ enum class op_type_t : uint8_t {
     STW_110111 = 0b110111,
 
     ADD_010001 = 0b010001,
+    ADD_000001 = 0b000001,
 };
 
 class cpu_t {

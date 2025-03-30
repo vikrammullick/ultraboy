@@ -121,10 +121,12 @@ void cpu_t::tick() {
         write_word(reg1 + sign_extend_16(read_pc_halfword()), reg2);
         break;
     // arithmetic
-    case op_type_t::ADD_010001: {
+    case op_type_t::ADD_010001:
         reg2 = add(reg2, sign_extend(five_1));
         break;
-    }
+    case op_type_t::ADD_000001:
+        reg2 = add(reg2, reg1);
+        break;
     default:
         assert(false);
     }
