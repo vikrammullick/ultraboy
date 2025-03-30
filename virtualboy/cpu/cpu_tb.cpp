@@ -63,12 +63,12 @@ memory_t parse_mem(const json &data1, const json &data2) {
     for (const auto &[addr, value] : data1.items()) {
         uint32_t addr_val = std::stoul(addr);
         uint8_t value_val = value;
-        mem.write(addr_val, value_val);
+        mem.write_b(addr_val, value_val);
     }
     for (const auto &[addr, value] : data2.items()) {
         uint32_t addr_val = std::stoul(addr);
         uint8_t value_val = value;
-        mem.write(addr_val, value_val);
+        mem.write_b(addr_val, value_val);
     }
     return mem;
 }

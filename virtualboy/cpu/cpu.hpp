@@ -48,8 +48,8 @@ class cpu_t {
 
     void tick();
 
-    uint16_t read_halfword(uint32_t addr);
     uint32_t read_word(uint32_t addr);
+    void write_word(uint32_t addr, uint32_t value);
     uint16_t read_pc_halfword();
 
     void load_state(const cpu_state_t &state) { m_state = state; }

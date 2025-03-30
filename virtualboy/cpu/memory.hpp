@@ -8,8 +8,10 @@ class memory_t {
   public:
     memory_t();
 
-    void write(uint32_t addr, uint8_t val);
-    uint8_t read(uint32_t addr);
+    void write_b(uint32_t addr, uint8_t val);
+    uint8_t read_b(uint32_t addr);
+    void write_h(uint32_t addr, uint16_t val);
+    uint16_t read_h(uint32_t addr);
 
     bool operator==(const memory_t &) const = default;
 
