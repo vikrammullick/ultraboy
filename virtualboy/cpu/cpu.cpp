@@ -51,6 +51,15 @@ uint16_t cpu_t::read_pc_halfword() {
     return ret;
 }
 
+uint32_t cpu_t::add(uint32_t op1, uint32_t op2) {
+    uint32_t out = op1 + op2;
+    m_state.psw_zero = out == 0;
+    m_state.psw_sign = out & 0x80000000;
+    m_state.psw_carry = op1 > out;
+    m_state.psw_overflow = (~(op1 ^ op2) & (out ^ op1)) & 0x80000000;
+    return out;
+}
+
 void cpu_t::tick() {
     // fetch
     uint16_t inst = read_pc_halfword();
@@ -111,6 +120,11 @@ void cpu_t::tick() {
     case op_type_t::STW_110111:
         write_word(reg1 + sign_extend_16(read_pc_halfword()), reg2);
         break;
+    // arithmetic
+    case op_type_t::ADD_010001: {
+        reg2 = add(reg2, sign_extend(five_1));
+        break;
+    }
     default:
         assert(false);
     }
