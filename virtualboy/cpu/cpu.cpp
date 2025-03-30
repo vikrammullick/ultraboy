@@ -105,11 +105,20 @@ void cpu_t::tick() {
         m_memory.write(reg1 + sign_extend_16(read_pc_halfword()), reg2 & 0xFF);
         break;
     case op_type_t::OUTH_111101:
-    case op_type_t::STH_110100: {
+    case op_type_t::STH_110101: {
         uint32_t addr =
             halfword_mask(reg1 + sign_extend_16(read_pc_halfword()));
         m_memory.write(addr, reg2 & 0xFF);
         m_memory.write(addr + 1, (reg2 >> 8) & 0xFF);
+        break;
+    }
+    case op_type_t::OUTW_111111:
+    case op_type_t::STW_110111: {
+        uint32_t addr = word_mask(reg1 + sign_extend_16(read_pc_halfword()));
+        m_memory.write(addr, reg2 & 0xFF);
+        m_memory.write(addr + 1, (reg2 >> 8) & 0xFF);
+        m_memory.write(addr + 2, (reg2 >> 16) & 0xFF);
+        m_memory.write(addr + 3, (reg2 >> 24) & 0xFF);
         break;
     }
     default:
