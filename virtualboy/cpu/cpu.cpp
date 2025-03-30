@@ -31,15 +31,18 @@ int32_t sign_extend_8(uint8_t value) {
     return sign_extend(std::bitset<8>(value));
 }
 
+uint32_t halfword_mask(uint32_t addr) { return addr & 0xFFFFFFFE; }
+uint32_t word_mask(uint32_t addr) { return addr & 0xFFFFFFFC; }
+
 uint16_t cpu_t::read_halfword(uint32_t addr) {
-    addr &= 0xFFFFFFFE;
+    addr = halfword_mask(addr);
     uint8_t lo = m_memory.read(addr);
     uint8_t hi = m_memory.read(addr + 1);
     return (hi << 8) + lo;
 }
 
 uint32_t cpu_t::read_word(uint32_t addr) {
-    addr &= 0xFFFFFFFC;
+    addr = word_mask(addr);
     uint16_t lo = read_halfword(addr);
     uint16_t hi = read_halfword(addr + 2);
     return (hi << 16) + lo;
@@ -99,8 +102,16 @@ void cpu_t::tick() {
     // store and output
     case op_type_t::OUTB_111100:
     case op_type_t::STB_110100:
-        m_memory.write(reg1 + sign_extend_16(read_pc_halfword()), reg2);
+        m_memory.write(reg1 + sign_extend_16(read_pc_halfword()), reg2 & 0xFF);
         break;
+    case op_type_t::OUTH_111101:
+    case op_type_t::STH_110100: {
+        uint32_t addr =
+            halfword_mask(reg1 + sign_extend_16(read_pc_halfword()));
+        m_memory.write(addr, reg2 & 0xFF);
+        m_memory.write(addr + 1, (reg2 >> 8) & 0xFF);
+        break;
+    }
     default:
         assert(false);
     }
