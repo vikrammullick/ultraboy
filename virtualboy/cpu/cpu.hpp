@@ -30,6 +30,9 @@ enum class op_type_t : uint8_t {
     LDB_110000 = 0b110000,
     LDH_110001 = 0b110001,
     LDW_110011 = 0b110011,
+
+    OUTB_111100 = 0b111100,
+    STB_110100 = 0b110100,
 };
 
 class cpu_t {

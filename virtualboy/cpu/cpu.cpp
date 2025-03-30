@@ -97,6 +97,10 @@ void cpu_t::tick() {
         reg2 = read_word(reg1 + sign_extend_16(read_pc_halfword()));
         break;
     // store and output
+    case op_type_t::OUTB_111100:
+    case op_type_t::STB_110100:
+        m_memory.write(reg1 + sign_extend_16(read_pc_halfword()), reg2);
+        break;
     default:
         assert(false);
     }
