@@ -127,6 +127,9 @@ void cpu_t::tick() {
     case op_type_t::ADD_000001:
         reg2 = add(reg2, reg1);
         break;
+    case op_type_t::ADDI_101001:
+        reg2 = add(reg1, sign_extend_16(read_pc_halfword()));
+        break;
     default:
         assert(false);
     }
