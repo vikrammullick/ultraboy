@@ -45,6 +45,8 @@ enum class op_type_t : uint8_t {
     CMP_000011 = 0b000011,
     // TODO: DIV/MUL
     SUB_000010 = 0b000010,
+
+    AND_001101 = 0b001101,
 };
 
 class cpu_t {
@@ -60,6 +62,7 @@ class cpu_t {
     void write_word(uint32_t addr, uint32_t value);
     uint16_t read_pc_halfword();
 
+    void set_zero_and_sign(uint32_t res);
     uint32_t add(uint32_t op1, uint32_t op2);
     uint32_t sub(uint32_t op1, uint32_t op2);
 

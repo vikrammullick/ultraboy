@@ -51,10 +51,14 @@ uint16_t cpu_t::read_pc_halfword() {
     return ret;
 }
 
+void cpu_t::set_zero_and_sign(uint32_t res) {
+    m_state.psw_zero = res == 0;
+    m_state.psw_sign = res & 0x80000000;
+}
+
 uint32_t cpu_t::add(uint32_t op1, uint32_t op2) {
     uint32_t out = op1 + op2;
-    m_state.psw_zero = out == 0;
-    m_state.psw_sign = out & 0x80000000;
+    set_zero_and_sign(out);
     m_state.psw_carry = op1 > out;
     m_state.psw_overflow = (~(op1 ^ op2) & (out ^ op1)) & 0x80000000;
     return out;
@@ -62,8 +66,7 @@ uint32_t cpu_t::add(uint32_t op1, uint32_t op2) {
 
 uint32_t cpu_t::sub(uint32_t op1, uint32_t op2) {
     uint32_t out = op1 - op2;
-    m_state.psw_zero = out == 0;
-    m_state.psw_sign = out & 0x80000000;
+    set_zero_and_sign(out);
     m_state.psw_carry = op2 > op1;
     m_state.psw_overflow = ((op1 ^ op2) & (out ^ op1)) & 0x80000000;
     return out;
@@ -147,6 +150,12 @@ void cpu_t::tick() {
         break;
     case op_type_t::SUB_000010:
         reg2 = sub(reg2, reg1);
+        break;
+    // bitwise
+    case op_type_t::AND_001101:
+        reg2 &= reg1;
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
         break;
     default:
         assert(false);
