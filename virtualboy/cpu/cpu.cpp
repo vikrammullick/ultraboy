@@ -145,6 +145,9 @@ void cpu_t::tick() {
     case op_type_t::CMP_000011:
         sub(reg2, reg1);
         break;
+    case op_type_t::SUB_000010:
+        reg2 = sub(reg2, reg1);
+        break;
     default:
         assert(false);
     }
