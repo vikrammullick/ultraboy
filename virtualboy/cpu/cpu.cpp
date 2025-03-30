@@ -64,6 +64,7 @@ void cpu_t::tick() {
     auto &reg1 = m_state.regs[five_1.to_ulong()];
 
     switch (opcode) {
+    // register transfer
     case op_type_t::MOV_010000:
         reg2 = sign_extend(five_1);
         break;
@@ -76,27 +77,26 @@ void cpu_t::tick() {
     case op_type_t::MOVHI_101111:
         reg2 = reg1 + (read_pc_halfword() << 16);
         break;
+    // load and input
     case op_type_t::INB_111000:
         reg2 = m_memory.read(reg1 + sign_extend_16(read_pc_halfword()));
         break;
-    case op_type_t::INH_111001: {
+    case op_type_t::INH_111001:
         reg2 = read_halfword(reg1 + sign_extend_16(read_pc_halfword()));
         break;
-    }
     case op_type_t::LDB_110000:
         reg2 = sign_extend_8(
             m_memory.read(reg1 + sign_extend_16(read_pc_halfword())));
         break;
-    case op_type_t::LDH_110001: {
+    case op_type_t::LDH_110001:
         reg2 = sign_extend_16(
             read_halfword(reg1 + sign_extend_16(read_pc_halfword())));
         break;
-    }
     case op_type_t::INW_111011:
-    case op_type_t::LDW_110011: {
+    case op_type_t::LDW_110011:
         reg2 = read_word(reg1 + sign_extend_16(read_pc_halfword()));
         break;
-    }
+    // store and output
     default:
         assert(false);
     }
