@@ -1,7 +1,7 @@
 #ifndef CPU_H
 #define CPU_H
 
-#include "memory.hpp"
+#include "memory_bus.hpp"
 
 #include <array>
 #include <bitset>
@@ -52,10 +52,10 @@ enum class op_type_t : uint8_t {
 
 class cpu_t {
     cpu_state_t m_state;
-    memory_t &m_memory;
+    memory_bus_t &m_memory_bus;
 
   public:
-    cpu_t(memory_t &memory);
+    cpu_t(memory_bus_t &memory_bus);
 
     void tick();
 

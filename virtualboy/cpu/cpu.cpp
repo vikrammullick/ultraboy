@@ -6,7 +6,7 @@
 
 using namespace std;
 
-cpu_t::cpu_t(memory_t &memory) : m_memory(memory) {}
+cpu_t::cpu_t(memory_bus_t &memory_bus) : m_memory_bus(memory_bus) {}
 
 template <size_t N> int32_t sign_extend(const std::bitset<N> &bits) {
     static_assert(N <= 32, "Can only sign-extend up to 32 bits");
@@ -35,18 +35,18 @@ uint32_t word_mask(uint32_t addr) { return addr & 0xFFFFFFFC; }
 
 uint32_t cpu_t::read_word(uint32_t addr) {
     addr = word_mask(addr);
-    uint16_t lo = m_memory.read_h(addr);
-    uint16_t hi = m_memory.read_h(addr + 2);
+    uint16_t lo = m_memory_bus.read_h(addr);
+    uint16_t hi = m_memory_bus.read_h(addr + 2);
     return (hi << 16) + lo;
 }
 void cpu_t::write_word(uint32_t addr, uint32_t value) {
     addr = word_mask(addr);
-    m_memory.write_h(addr, value & 0xFFFF);
-    m_memory.write_h(addr + 2, (value >> 16) & 0xFFFF);
+    m_memory_bus.write_h(addr, value & 0xFFFF);
+    m_memory_bus.write_h(addr + 2, (value >> 16) & 0xFFFF);
 }
 
 uint16_t cpu_t::read_pc_halfword() {
-    uint16_t ret = m_memory.read_h(m_state.pc);
+    uint16_t ret = m_memory_bus.read_h(m_state.pc);
     m_state.pc += 2;
     return ret;
 }
@@ -100,18 +100,18 @@ void cpu_t::tick() {
         break;
     // load and input
     case op_type_t::INB_111000:
-        reg2 = m_memory.read_b(reg1 + sign_extend_16(read_pc_halfword()));
+        reg2 = m_memory_bus.read_b(reg1 + sign_extend_16(read_pc_halfword()));
         break;
     case op_type_t::INH_111001:
-        reg2 = m_memory.read_h(reg1 + sign_extend_16(read_pc_halfword()));
+        reg2 = m_memory_bus.read_h(reg1 + sign_extend_16(read_pc_halfword()));
         break;
     case op_type_t::LDB_110000:
         reg2 = sign_extend_8(
-            m_memory.read_b(reg1 + sign_extend_16(read_pc_halfword())));
+            m_memory_bus.read_b(reg1 + sign_extend_16(read_pc_halfword())));
         break;
     case op_type_t::LDH_110001:
         reg2 = sign_extend_16(
-            m_memory.read_h(reg1 + sign_extend_16(read_pc_halfword())));
+            m_memory_bus.read_h(reg1 + sign_extend_16(read_pc_halfword())));
         break;
     case op_type_t::INW_111011:
     case op_type_t::LDW_110011:
@@ -120,13 +120,13 @@ void cpu_t::tick() {
     // store and output
     case op_type_t::OUTB_111100:
     case op_type_t::STB_110100:
-        m_memory.write_b(reg1 + sign_extend_16(read_pc_halfword()),
-                         reg2 & 0xFF);
+        m_memory_bus.write_b(reg1 + sign_extend_16(read_pc_halfword()),
+                             reg2 & 0xFF);
         break;
     case op_type_t::OUTH_111101:
     case op_type_t::STH_110101:
-        m_memory.write_h(reg1 + sign_extend_16(read_pc_halfword()),
-                         reg2 & 0xFFFF);
+        m_memory_bus.write_h(reg1 + sign_extend_16(read_pc_halfword()),
+                             reg2 & 0xFFFF);
         break;
     case op_type_t::OUTW_111111:
     case op_type_t::STW_110111:

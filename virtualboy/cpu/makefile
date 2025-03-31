@@ -2,11 +2,11 @@ CXX := g++
 
 CXXFLAGS := -std=c++20 -Wall -O3 -Wswitch-enum
 
-SRCS := cpu_tb.cpp memory.cpp cpu.cpp 
+SRCS := cpu_tb.cpp memory_bus.cpp cpu.cpp 
 
 OBJS := $(SRCS:.cpp=.o)
 
-$HEADERS := memory.hpp cpu.hpp 
+$HEADERS := memory_bus.hpp cpu.hpp 
 
 TARGET := cpu_tb
 

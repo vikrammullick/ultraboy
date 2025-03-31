@@ -5,13 +5,13 @@
 #include <set>
 
 #include "cpu.hpp"
-#include "memory.hpp"
+#include "memory_bus.hpp"
 
 namespace fs = std::filesystem;
 using json = nlohmann::json;
 using namespace std;
 
-std::ostream &operator<<(std::ostream &os, const memory_t &obj) {
+std::ostream &operator<<(std::ostream &os, const memory_bus_t &obj) {
     os << std::hex;
     os << "{";
     bool first = true;
@@ -58,8 +58,8 @@ cpu_state_t parse_cpu(const json &data) {
                        data["psw_carry"]};
 }
 
-memory_t parse_mem(const json &data1, const json &data2) {
-    memory_t mem;
+memory_bus_t parse_mem(const json &data1, const json &data2) {
+    memory_bus_t mem;
     for (const auto &[addr, value] : data1.items()) {
         uint32_t addr_val = std::stoul(addr);
         uint8_t value_val = value;
@@ -77,21 +77,23 @@ bool do_single(const json &test) {
     cpu_state_t initial = parse_cpu(test["before"]);
     cpu_state_t expected = parse_cpu(test["after"]);
 
-    memory_t test_memory = parse_mem(test["reads"], test["reads"]);
-    memory_t expected_memory = parse_mem(test["reads"], test["writes"]);
+    memory_bus_t test_memory_bus = parse_mem(test["reads"], test["reads"]);
+    memory_bus_t expected_memory_bus = parse_mem(test["reads"], test["writes"]);
 
-    cpu_t test_cpu(test_memory);
+    cpu_t test_cpu(test_memory_bus);
     test_cpu.load_state(initial);
     test_cpu.tick();
 
     auto actual_state = test_cpu.dump_state();
 
     bool registers_match = expected == actual_state;
-    bool mem_match = expected_memory == test_memory;
+    bool mem_match = expected_memory_bus == test_memory_bus;
 
     if (!registers_match || !mem_match) {
-        cout << "got: \n" << test_memory << "\n" << actual_state << endl;
-        cout << "expected: \n" << expected_memory << "\n" << expected << endl;
+        cout << "got: \n" << test_memory_bus << "\n" << actual_state << endl;
+        cout << "expected: \n"
+             << expected_memory_bus << "\n"
+             << expected << endl;
         return false;
     }
     return true;
