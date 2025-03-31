@@ -47,6 +47,7 @@ enum class op_type_t : uint8_t {
     SUB_000010 = 0b000010,
 
     AND_001101 = 0b001101,
+    ANDI_101101 = 0b101101,
 };
 
 class cpu_t {

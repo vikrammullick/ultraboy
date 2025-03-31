@@ -157,6 +157,11 @@ void cpu_t::tick() {
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
         break;
+    case op_type_t::ANDI_101101:
+        reg2 = reg1 & read_pc_halfword();
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
+        break;
     default:
         assert(false);
     }
