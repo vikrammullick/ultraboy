@@ -2,21 +2,21 @@ CXX := g++
 
 CXXFLAGS := -std=c++20 -Wall -O3 -Wswitch-enum
 
-SRCS := cpu_tb.cpp memory_bus.cpp cpu.cpp 
+SRCS := run.cpp emulator.cpp cpu.cpp memory_bus.cpp 
 
 OBJS := $(SRCS:.cpp=.o)
 
-$HEADERS := memory_bus.hpp cpu.hpp 
+$HEADERS := emulator.hpp cpu.hpp memory_bus.hpp
 
-TARGET := cpu_tb
+TARGET := ultraboy
 
 all: $(TARGET)
 
 run: all
-	./cpu_tb
+	./ultraboy roms/wario.vb
 
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $@ $^
+	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2
 
 %.o: %.cpp $(HEADERS) 
 	$(CXX) $(CXXFLAGS) -c $< -o $@

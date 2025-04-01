@@ -6,7 +6,16 @@
 
 using namespace std;
 
-cpu_t::cpu_t(memory_bus_t &memory_bus) : m_memory_bus(memory_bus) {}
+cpu_t::cpu_t(memory_bus_t &memory_bus) : m_memory_bus(memory_bus) {
+    // initial cpu state (will add more as more fields added)
+    m_state.pc = 0xFFFFFFF0;
+    m_state.regs[0] = 0;
+
+    m_state.psw_zero = false;
+    m_state.psw_sign = false;
+    m_state.psw_overflow = false;
+    m_state.psw_carry = false;
+}
 
 template <size_t N> int32_t sign_extend(const std::bitset<N> &bits) {
     static_assert(N <= 32, "Can only sign-extend up to 32 bits");
@@ -163,6 +172,8 @@ void cpu_t::tick() {
         m_state.psw_overflow = false;
         break;
     default:
+        cout << "opcode unimplemented: 0b"
+             << std::bitset<6>(static_cast<uint8_t>(opcode)) << endl;
         assert(false);
     }
 }
