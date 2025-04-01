@@ -171,6 +171,10 @@ void cpu_t::tick() {
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
         break;
+    // cpu control
+    case op_type_t::JMP_000110:
+        m_state.pc = reg1;
+        break;
     default:
         cout << "opcode unimplemented: 0b"
              << std::bitset<6>(static_cast<uint8_t>(opcode)) << endl;

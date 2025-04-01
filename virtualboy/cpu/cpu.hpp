@@ -48,6 +48,8 @@ enum class op_type_t : uint8_t {
 
     AND_001101 = 0b001101,
     ANDI_101101 = 0b101101,
+
+    JMP_000110 = 0b000110,
 };
 
 class cpu_t {
