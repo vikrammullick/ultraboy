@@ -1,9 +1,11 @@
-#ifndef MEMORY_H
-#define MEMORY_H
+#ifndef MEMORY_BUS_H
+#define MEMORY_BUS_H
 
-#include <map>
+#include "game_pak.hpp"
 
 class memory_bus_t {
+    game_pak_t m_game_pak;
+
   public:
     memory_bus_t(const std::vector<char> &rom_bytes);
 
@@ -13,4 +15,4 @@ class memory_bus_t {
     uint16_t read_h(uint32_t addr);
 };
 
-#endif // MEMORY_H
+#endif // MEMORY_BUS_H

@@ -1,13 +1,42 @@
 #include "memory_bus.hpp"
 
+#include <iostream>
+
 using namespace std;
 
-memory_bus_t::memory_bus_t(const std::vector<char> &rom_bytes) {}
+constexpr uint32_t MEMORY_MASK = 0x07FFFFFF;
+constexpr uint32_t HALFWORD_MASK = 0xFFFFFFFE;
 
-void memory_bus_t::write_b(uint32_t addr, uint8_t val) { assert(false); }
+constexpr uint32_t GAME_PAK_ROM_START = 0x07000000;
+constexpr uint32_t GAME_PAK_ROM_END = 0x07FFFFFF;
 
-uint8_t memory_bus_t::read_b(uint32_t addr) { assert(false); }
+memory_bus_t::memory_bus_t(const std::vector<char> &rom_bytes)
+    : m_game_pak(rom_bytes) {}
 
-void memory_bus_t::write_h(uint32_t addr, uint16_t val) { assert(false); }
+void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
+    addr &= MEMORY_MASK;
+    assert(false);
+}
 
-uint16_t memory_bus_t::read_h(uint32_t addr) { assert(false); }
+uint8_t memory_bus_t::read_b(uint32_t addr) {
+    addr &= MEMORY_MASK;
+    assert(false);
+}
+
+void memory_bus_t::write_h(uint32_t addr, uint16_t val) {
+    addr &= MEMORY_MASK;
+    addr &= HALFWORD_MASK;
+    assert(false);
+}
+
+uint16_t memory_bus_t::read_h(uint32_t addr) {
+    addr &= MEMORY_MASK;
+    addr &= HALFWORD_MASK;
+
+    if (addr >= GAME_PAK_ROM_START && addr <= GAME_PAK_ROM_END) {
+        return m_game_pak.rom_read_h(addr - GAME_PAK_ROM_START);
+    }
+
+    cout << std::hex << addr << endl;
+    assert(false);
+}

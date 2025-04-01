@@ -54,11 +54,6 @@ class cpu_t {
     cpu_state_t m_state;
     memory_bus_t &m_memory_bus;
 
-  public:
-    cpu_t(memory_bus_t &memory_bus);
-
-    void tick();
-
     uint32_t read_word(uint32_t addr);
     void write_word(uint32_t addr, uint32_t value);
     uint16_t read_pc_halfword();
@@ -66,6 +61,11 @@ class cpu_t {
     void set_zero_and_sign(uint32_t res);
     uint32_t add(uint32_t op1, uint32_t op2);
     uint32_t sub(uint32_t op1, uint32_t op2);
+
+  public:
+    cpu_t(memory_bus_t &memory_bus);
+
+    void tick();
 
     void load_state(const cpu_state_t &state) { m_state = state; }
 
