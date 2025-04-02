@@ -87,6 +87,41 @@ void cpu_t::tick() {
 
     op_type_t opcode = static_cast<op_type_t>(inst >> 10);
 
+    if ((inst >> 13) == BCOND_100) {
+        uint8_t cond = (inst >> 9) & 0b0111;
+        bool invert = (inst >> 9) & 0b1000;
+        bool cond_eval = [this, cond]() {
+            switch (cond) {
+            case 0:
+                return m_state.psw_overflow;
+            case 1:
+                return m_state.psw_carry;
+            case 2:
+                return m_state.psw_zero;
+            case 3:
+                return m_state.psw_carry || m_state.psw_zero;
+            case 4:
+                return m_state.psw_sign;
+            case 5:
+                return true;
+            case 6:
+                return m_state.psw_overflow != m_state.psw_sign;
+            case 7:
+                return (m_state.psw_overflow != m_state.psw_sign) ||
+                       m_state.psw_zero;
+            default:
+                return false;
+            }
+        }();
+        if (cond_eval != invert) {
+            std::bitset<9> nine_0 = (inst >> 0) & 0b111111111;
+            int32_t disp = sign_extend(nine_0);
+            m_state.pc -= 2;
+            m_state.pc += disp;
+        }
+        return;
+    }
+
     std::bitset<5> five_0 = (inst >> 5) & 0b11111;
     std::bitset<5> five_1 = (inst >> 0) & 0b11111;
 

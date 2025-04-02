@@ -18,6 +18,8 @@ struct cpu_state_t {
     bool operator==(const cpu_state_t &) const = default;
 };
 
+constexpr uint8_t BCOND_100 = 0b100;
+
 enum class op_type_t : uint8_t {
     MOV_010000 = 0b010000,
     MOV_000000 = 0b000000,
@@ -49,6 +51,7 @@ enum class op_type_t : uint8_t {
     AND_001101 = 0b001101,
     ANDI_101101 = 0b101101,
 
+    // BCOND_100 defined above
     JMP_000110 = 0b000110,
 };
 
