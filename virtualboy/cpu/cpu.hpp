@@ -53,6 +53,7 @@ enum class op_type_t : uint8_t {
 
     // BCOND_100 defined above
     JMP_000110 = 0b000110,
+    JR_101010 = 0b101010,
 };
 
 class cpu_t {

@@ -42,11 +42,13 @@ int32_t sign_extend_8(uint8_t value) {
 
 uint32_t word_mask(uint32_t addr) { return addr & 0xFFFFFFFC; }
 
+uint32_t combine_into_word(uint16_t hi, uint16_t lo) { return (hi << 16) + lo; }
+
 uint32_t cpu_t::read_word(uint32_t addr) {
     addr = word_mask(addr);
     uint16_t lo = m_memory_bus.read_h(addr);
     uint16_t hi = m_memory_bus.read_h(addr + 2);
-    return (hi << 16) + lo;
+    return combine_into_word(hi, lo);
 }
 void cpu_t::write_word(uint32_t addr, uint32_t value) {
     addr = word_mask(addr);
@@ -210,6 +212,14 @@ void cpu_t::tick() {
     case op_type_t::JMP_000110:
         m_state.pc = reg1;
         break;
+    case op_type_t::JR_101010: {
+        std::bitset<26> twenty_six_0 =
+            combine_into_word(inst, read_pc_halfword()) & ~(0b111111 << 26);
+        int32_t disp = sign_extend(twenty_six_0);
+        m_state.pc -= 4;
+        m_state.pc += disp;
+        break;
+    }
     default:
         cout << "opcode unimplemented: 0b"
              << std::bitset<6>(static_cast<uint8_t>(opcode)) << endl;
