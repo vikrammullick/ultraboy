@@ -52,6 +52,7 @@ enum class op_type_t : uint8_t {
     ANDI_101101 = 0b101101,
 
     // BCOND_100 defined above
+    JAL_101011 = 0b101011,
     JMP_000110 = 0b000110,
     JR_101010 = 0b101010,
 };
@@ -63,6 +64,7 @@ class cpu_t {
     uint32_t read_word(uint32_t addr);
     void write_word(uint32_t addr, uint32_t value);
     uint16_t read_pc_halfword();
+    int32_t get_disp_26(uint16_t hi);
 
     void set_zero_and_sign(uint32_t res);
     uint32_t add(uint32_t op1, uint32_t op2);

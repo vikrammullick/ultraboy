@@ -62,6 +62,12 @@ uint16_t cpu_t::read_pc_halfword() {
     return ret;
 }
 
+int32_t cpu_t::get_disp_26(uint16_t hi) {
+    std::bitset<26> twenty_six_0 =
+        combine_into_word(hi, read_pc_halfword()) & ~(0b111111 << 26);
+    return sign_extend(twenty_six_0);
+}
+
 void cpu_t::set_zero_and_sign(uint32_t res) {
     m_state.psw_zero = res == 0;
     m_state.psw_sign = res & 0x80000000;
@@ -118,8 +124,7 @@ void cpu_t::tick() {
         if (cond_eval != invert) {
             std::bitset<9> nine_0 = (inst >> 0) & 0b111111111;
             int32_t disp = sign_extend(nine_0);
-            m_state.pc -= 2;
-            m_state.pc += disp;
+            m_state.pc += disp - 2;
         }
         return;
     }
@@ -209,17 +214,18 @@ void cpu_t::tick() {
         m_state.psw_overflow = false;
         break;
     // cpu control
+    case op_type_t::JAL_101011: {
+        int32_t disp = get_disp_26(inst);
+        m_state.regs[31] = m_state.pc;
+        m_state.pc += disp - 4;
+        break;
+    }
     case op_type_t::JMP_000110:
         m_state.pc = reg1;
         break;
-    case op_type_t::JR_101010: {
-        std::bitset<26> twenty_six_0 =
-            combine_into_word(inst, read_pc_halfword()) & ~(0b111111 << 26);
-        int32_t disp = sign_extend(twenty_six_0);
-        m_state.pc -= 4;
-        m_state.pc += disp;
+    case op_type_t::JR_101010:
+        m_state.pc += get_disp_26(inst) - 4;
         break;
-    }
     default:
         cout << "opcode unimplemented: 0b"
              << std::bitset<6>(static_cast<uint8_t>(opcode)) << endl;
