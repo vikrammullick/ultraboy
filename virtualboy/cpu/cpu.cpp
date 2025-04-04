@@ -266,6 +266,11 @@ void cpu_t::tick() {
         m_state.psw_carry = reg2_64 & (1ULL << 32);
         break;
     }
+    case op_type_t::XOR_001110:
+        reg2 ^= reg1;
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
+        break;
     // cpu control
     case op_type_t::JAL_101011: {
         int32_t disp = get_disp_26(inst);

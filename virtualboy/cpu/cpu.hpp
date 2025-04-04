@@ -70,6 +70,7 @@ enum class op_type_t : uint8_t {
     OR_001100 = 0b001100,
     ORI_101100 = 0b101100,
     SHL_010100 = 0b010100,
+    XOR_001110 = 0b001110,
 
     // BCOND_100 defined above
     JAL_101011 = 0b101011,
