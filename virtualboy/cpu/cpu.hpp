@@ -72,6 +72,8 @@ enum class op_type_t : uint8_t {
     JMP_000110 = 0b000110,
     JR_101010 = 0b101010,
     LDSR_011100 = 0b011100,
+
+    SEI_011110 = 0b011110,
 };
 
 class cpu_t {

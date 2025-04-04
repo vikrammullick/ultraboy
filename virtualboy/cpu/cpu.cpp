@@ -268,6 +268,10 @@ void cpu_t::tick() {
             assert(false);
         }
         break;
+    // standalone
+    case op_type_t::SEI_011110:
+        m_state.psw_interrupt_disable = true;
+        break;
     default:
         cout << "opcode unimplemented: 0b"
              << std::bitset<6>(static_cast<uint8_t>(opcode)) << endl;
