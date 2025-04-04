@@ -271,6 +271,11 @@ void cpu_t::tick() {
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
         break;
+    case op_type_t::XORI_101110:
+        reg2 = reg1 ^ read_pc_halfword();
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
+        break;
     // cpu control
     case op_type_t::JAL_101011: {
         int32_t disp = get_disp_26(inst);
