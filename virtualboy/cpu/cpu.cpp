@@ -242,6 +242,15 @@ void cpu_t::tick() {
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
         break;
+    case op_type_t::SHL_010100: {
+        uint64_t reg2_64 = reg2;
+        reg2_64 <<= five_1.to_ulong();
+        reg2 = reg2_64 & 0xFFFFFFFF;
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
+        m_state.psw_carry = reg2_64 & (1ULL << 32);
+        break;
+    }
     // cpu control
     case op_type_t::JAL_101011: {
         int32_t disp = get_disp_26(inst);

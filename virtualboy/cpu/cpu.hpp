@@ -66,6 +66,7 @@ enum class op_type_t : uint8_t {
 
     AND_001101 = 0b001101,
     ANDI_101101 = 0b101101,
+    SHL_010100 = 0b010100,
 
     // BCOND_100 defined above
     JAL_101011 = 0b101011,
