@@ -247,6 +247,11 @@ void cpu_t::tick() {
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
         break;
+    case op_type_t::OR_001100:
+        reg2 |= reg1;
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = false;
+        break;
     case op_type_t::SHL_010100: {
         uint64_t reg2_64 = reg2;
         reg2_64 <<= five_1.to_ulong();
