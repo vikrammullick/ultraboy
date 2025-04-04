@@ -269,6 +269,9 @@ void cpu_t::tick() {
         }
         break;
     // standalone
+    case op_type_t::CLI_010110:
+        m_state.psw_interrupt_disable = false;
+        break;
     case op_type_t::SEI_011110:
         m_state.psw_interrupt_disable = true;
         break;
