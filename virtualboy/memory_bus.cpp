@@ -42,6 +42,9 @@ uint16_t memory_bus_t::read_h(uint32_t addr) {
     addr &= MEMORY_MASK;
     addr &= HALFWORD_MASK;
 
+    if (addr >= WRAM_START && addr <= WRAM_END) {
+        return m_wram.read_h(addr - WRAM_START);
+    }
     if (addr >= GAME_PAK_ROM_START && addr <= GAME_PAK_ROM_END) {
         return m_game_pak.rom_read_h(addr - GAME_PAK_ROM_START);
     }

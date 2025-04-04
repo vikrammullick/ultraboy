@@ -13,3 +13,10 @@ void wram_t::write_h(uint32_t addr, uint16_t val) {
     uint16_t *half_word_ptr = reinterpret_cast<uint16_t *>(byte_ptr);
     *half_word_ptr = val;
 }
+
+uint16_t wram_t::read_h(uint32_t addr) {
+    const char *byte_ptr = m_bytes.data() + addr;
+    const uint16_t *half_word_ptr =
+        reinterpret_cast<const uint16_t *>(byte_ptr);
+    return *half_word_ptr;
+}

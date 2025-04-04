@@ -10,6 +10,7 @@ class wram_t {
     wram_t();
 
     void write_h(uint32_t addr, uint16_t val);
+    uint16_t read_h(uint32_t addr);
 };
 
 #endif // WRAM_H
