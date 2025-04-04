@@ -29,6 +29,11 @@ struct cpu_state_t {
     bool operator==(const cpu_state_t &) const = default;
 };
 
+enum class system_register_t : uint8_t {
+    CHCW = 24,
+    PSW = 5,
+};
+
 constexpr uint8_t BCOND_100 = 0b100;
 
 enum class op_type_t : uint8_t {
@@ -66,6 +71,7 @@ enum class op_type_t : uint8_t {
     JAL_101011 = 0b101011,
     JMP_000110 = 0b000110,
     JR_101010 = 0b101010,
+    LDSR_011100 = 0b011100,
 };
 
 class cpu_t {
@@ -78,6 +84,7 @@ class cpu_t {
     int32_t get_disp_26(uint16_t hi);
 
     void set_zero_and_sign(uint32_t res);
+    void set_psw(uint32_t val);
     uint32_t add(uint32_t op1, uint32_t op2);
     uint32_t sub(uint32_t op1, uint32_t op2);
 

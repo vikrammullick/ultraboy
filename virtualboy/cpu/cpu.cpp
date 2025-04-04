@@ -84,6 +84,24 @@ void cpu_t::set_zero_and_sign(uint32_t res) {
     m_state.psw_sign = res & 0x80000000;
 }
 
+void cpu_t::set_psw(uint32_t val) {
+    m_state.psw_zero = (val >> 0) & 0b1;
+    m_state.psw_sign = (val >> 1) & 0b1;
+    m_state.psw_overflow = (val >> 2) & 0b1;
+    m_state.psw_carry = (val >> 3) & 0b1;
+    m_state.psw_fp_precision_degredation = (val >> 4) & 0b1;
+    m_state.psw_fp_underflow = (val >> 5) & 0b1;
+    m_state.psw_fp_overflow = (val >> 6) & 0b1;
+    m_state.psw_fp_zero_division = (val >> 7) & 0b1;
+    m_state.psw_fp_invalid_operation = (val >> 8) & 0b1;
+    m_state.psw_fp_reserved_operand = (val >> 9) & 0b1;
+    m_state.psw_interrupt_disable = (val >> 12) & 0b1;
+    m_state.psw_address_trap_enable = (val >> 13) & 0b1;
+    m_state.psw_exception_pending = (val >> 14) & 0b1;
+    m_state.psw_nmi_pending = (val >> 15) & 0b1;
+    m_state.psw_interrupt_mask_level = (val >> 16) & 0b1111;
+}
+
 uint32_t cpu_t::add(uint32_t op1, uint32_t op2) {
     uint32_t out = op1 + op2;
     set_zero_and_sign(out);
@@ -236,6 +254,19 @@ void cpu_t::tick() {
         break;
     case op_type_t::JR_101010:
         m_state.pc += get_disp_26(inst) - 4;
+        break;
+    case op_type_t::LDSR_011100:
+        switch (static_cast<system_register_t>(five_1.to_ulong())) {
+        case system_register_t::CHCW:
+            // TODO: configure instruction cache
+            break;
+        case system_register_t::PSW:
+            set_psw(reg2);
+            break;
+        default:
+            cout << "ldsr not implemented: 0b" << five_1 << endl;
+            assert(false);
+        }
         break;
     default:
         cout << "opcode unimplemented: 0b"
