@@ -11,18 +11,43 @@ namespace fs = std::filesystem;
 using json = nlohmann::json;
 using namespace std;
 
-std::ostream &operator<<(std::ostream &os, const memory_bus_t &obj) {
-    os << std::hex;
-    os << "{";
-    bool first = true;
-    for (const auto &[key, value] : obj.m_mem) {
-        if (!first)
-            os << ", ";
-        first = false;
-        os << key << ": "
-           << static_cast<int>(value); // cast u8 to int for readable output
+std::ostream &operator<<(std::ostream &os, const memory_bus_t &bus) {
+    os << "Memory Contents (" << bus.m_mem.size() << " bytes):\n";
+
+    if (bus.m_mem.empty()) {
+        os << "  <empty>\n";
+        return os;
     }
-    os << "}";
+
+    // Track where we are in memory to align 16-byte rows
+    uint32_t current_line = 0;
+    for (auto it = bus.m_mem.begin(); it != bus.m_mem.end();) {
+        uint32_t addr = it->first;
+        current_line = addr & ~0xF; // align to 16-byte boundary
+
+        // Start of a line
+        os << "0x" << std::hex << std::setw(8) << std::setfill('0')
+           << current_line << ": ";
+
+        // Print 16 bytes for this line
+        for (int i = 0; i < 16; ++i) {
+            uint32_t byte_addr = current_line + i;
+            if (bus.m_mem.contains(byte_addr)) {
+                os << std::setw(2) << std::setfill('0')
+                   << static_cast<int>(bus.m_mem.at(byte_addr)) << " ";
+            } else {
+                os << "   "; // blank space for missing memory
+            }
+        }
+
+        os << "\n";
+
+        // Advance iterator to the next 16-byte line
+        do {
+            ++it;
+        } while (it != bus.m_mem.end() && (it->first & ~0xF) == current_line);
+    }
+
     return os;
 }
 
@@ -35,16 +60,35 @@ std::ostream &operator<<(std::ostream &os, const cpu_state_t &state) {
         os << "  r" << std::dec << std::setw(2) << i << ": 0x" << std::hex
            << std::setw(8) << std::setfill('0') << state.regs[i];
         if ((i + 1) % 4 == 0)
-            os << "\n"; // print 4 regs per line
+            os << "\n";
         else
             os << "  ";
     }
 
-    os << "PSW flags: "
-       << "Z=" << state.psw_zero << " "
-       << "S=" << state.psw_sign << " "
-       << "O=" << state.psw_overflow << " "
-       << "C=" << state.psw_carry << "\n";
+    os << "PSW flags:\n"
+       << "  Z (Zero)                   = " << state.psw_zero << "\n"
+       << "  S (Sign)                   = " << state.psw_sign << "\n"
+       << "  O (Overflow)               = " << state.psw_overflow << "\n"
+       << "  C (Carry)                  = " << state.psw_carry << "\n"
+       << "  FP Precision Degradation   = "
+       << state.psw_fp_precision_degredation << "\n"
+       << "  FP Underflow               = " << state.psw_fp_underflow << "\n"
+       << "  FP Overflow                = " << state.psw_fp_overflow << "\n"
+       << "  FP Zero Division           = " << state.psw_fp_zero_division
+       << "\n"
+       << "  FP Invalid Operation       = " << state.psw_fp_invalid_operation
+       << "\n"
+       << "  FP Reserved Operand        = " << state.psw_fp_reserved_operand
+       << "\n"
+       << "  Interrupt Disable          = " << state.psw_interrupt_disable
+       << "\n"
+       << "  Address Trap Enable        = " << state.psw_address_trap_enable
+       << "\n"
+       << "  Exception Pending          = " << state.psw_exception_pending
+       << "\n"
+       << "  NMI Pending                = " << state.psw_nmi_pending << "\n"
+       << "  Interrupt Mask Level       = " << std::dec
+       << static_cast<int>(state.psw_interrupt_mask_level) << "\n";
 
     return os;
 }
@@ -55,7 +99,18 @@ cpu_state_t parse_cpu(const json &data) {
                        data["psw_zero"],
                        data["psw_sign"],
                        data["psw_overflow"],
-                       data["psw_carry"]};
+                       data["psw_carry"],
+                       data["psw_fp_precision_degredation"],
+                       data["psw_fp_underflow"],
+                       data["psw_fp_overflow"],
+                       data["psw_fp_zero_division"],
+                       data["psw_fp_invalid_operation"],
+                       data["psw_fp_reserved_operand"],
+                       data["psw_interrupt_disable"],
+                       data["psw_address_trap_enable"],
+                       data["psw_exception_pending"],
+                       data["psw_nmi_pending"],
+                       data["psw_interrupt_mask_level"]};
 }
 
 memory_bus_t parse_mem(const json &data1, const json &data2) {

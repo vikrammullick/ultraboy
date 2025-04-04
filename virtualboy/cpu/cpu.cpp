@@ -15,6 +15,17 @@ cpu_t::cpu_t(memory_bus_t &memory_bus) : m_memory_bus(memory_bus) {
     m_state.psw_sign = false;
     m_state.psw_overflow = false;
     m_state.psw_carry = false;
+    m_state.psw_fp_precision_degredation = false;
+    m_state.psw_fp_underflow = false;
+    m_state.psw_fp_overflow = false;
+    m_state.psw_fp_zero_division = false;
+    m_state.psw_fp_invalid_operation = false;
+    m_state.psw_fp_reserved_operand = false;
+    m_state.psw_interrupt_disable = false;
+    m_state.psw_address_trap_enable = false;
+    m_state.psw_exception_pending = false;
+    m_state.psw_nmi_pending = true;
+    m_state.psw_interrupt_mask_level = 0;
 }
 
 template <size_t N> int32_t sign_extend(const std::bitset<N> &bits) {

@@ -14,6 +14,17 @@ struct cpu_state_t {
     bool psw_sign;
     bool psw_overflow;
     bool psw_carry;
+    bool psw_fp_precision_degredation;
+    bool psw_fp_underflow;
+    bool psw_fp_overflow;
+    bool psw_fp_zero_division;
+    bool psw_fp_invalid_operation;
+    bool psw_fp_reserved_operand;
+    bool psw_interrupt_disable;
+    bool psw_address_trap_enable;
+    bool psw_exception_pending;
+    bool psw_nmi_pending;
+    uint8_t psw_interrupt_mask_level;
 
     bool operator==(const cpu_state_t &) const = default;
 };
