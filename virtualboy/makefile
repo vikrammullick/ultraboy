@@ -2,18 +2,18 @@ CXX := g++
 
 CXXFLAGS := -std=c++20 -Wall -O3 -Wswitch-enum
 
-SRCS := run.cpp emulator.cpp cpu.cpp memory_bus.cpp game_pak.cpp 
+SRCS := run.cpp emulator.cpp cpu.cpp memory_bus.cpp wram.cpp game_pak.cpp 
 
 OBJS := $(SRCS:.cpp=.o)
 
-$HEADERS := emulator.hpp cpu.hpp memory_bus.hpp game_pak.hpp
+$HEADERS := emulator.hpp cpu.hpp memory_bus.hpp wram.hpp game_pak.hpp
 
 TARGET := ultraboy
 
 all: $(TARGET)
 
 run: all
-	./ultraboy roms/wario.vb
+	./ultraboy roms/tennis.vb
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2
