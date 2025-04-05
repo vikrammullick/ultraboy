@@ -70,6 +70,7 @@ enum class op_type_t : uint8_t {
     OR_001100 = 0b001100,
     ORI_101100 = 0b101100,
     SAR_010111 = 0b010111,
+    SAR_000111 = 0b000111,
     SHL_010100 = 0b010100,
     XOR_001110 = 0b001110,
     XORI_101110 = 0b101110,
@@ -97,6 +98,7 @@ class cpu_t {
     void set_psw(uint32_t val);
     uint32_t add(uint32_t op1, uint32_t op2);
     uint32_t sub(uint32_t op1, uint32_t op2);
+    uint32_t sar(uint32_t op1, uint8_t op2);
 
   public:
     cpu_t(memory_bus_t &memory_bus);

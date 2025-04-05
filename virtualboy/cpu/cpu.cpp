@@ -118,6 +118,20 @@ uint32_t cpu_t::sub(uint32_t op1, uint32_t op2) {
     return out;
 }
 
+uint32_t cpu_t::sar(uint32_t op1, uint8_t op2) {
+    assert(op2 < 32);
+    if (op2 == 0) {
+        m_state.psw_carry = false;
+    } else {
+        m_state.psw_carry = op1 & (0b1 << (op2 - 1));
+    }
+    int32_t op1_signed = op1;
+    op1_signed >>= op2;
+    set_zero_and_sign(op1_signed);
+    m_state.psw_overflow = false;
+    return op1_signed;
+}
+
 void cpu_t::tick() {
     // fetch
     uint16_t inst = read_pc_halfword();
@@ -258,19 +272,12 @@ void cpu_t::tick() {
         m_state.psw_overflow = false;
         break;
     case op_type_t::SAR_010111: {
-        uint8_t imm = five_1.to_ulong();
-        if (imm == 0) {
-            m_state.psw_carry = false;
-        } else {
-            m_state.psw_carry = reg2 & (0b1 << (imm - 1));
-        }
-        int32_t reg2_signed = reg2;
-        reg2_signed >>= imm;
-        reg2 = reg2_signed;
-        set_zero_and_sign(reg2);
-        m_state.psw_overflow = false;
+        reg2 = sar(reg2, five_1.to_ulong());
         break;
     }
+    case op_type_t::SAR_000111:
+        reg2 = sar(reg2, reg1 & 0x1F);
+        break;
     case op_type_t::SHL_010100: {
         uint8_t imm = five_1.to_ulong();
         if (imm == 0) {
