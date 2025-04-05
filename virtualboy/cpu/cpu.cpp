@@ -272,12 +272,15 @@ void cpu_t::tick() {
         break;
     }
     case op_type_t::SHL_010100: {
-        uint64_t reg2_64 = reg2;
-        reg2_64 <<= five_1.to_ulong();
-        reg2 = reg2_64 & 0xFFFFFFFF;
+        uint8_t imm = five_1.to_ulong();
+        if (imm == 0) {
+            m_state.psw_carry = false;
+        } else {
+            m_state.psw_carry = reg2 & (0b1 << (32 - imm));
+        }
+        reg2 <<= imm;
         set_zero_and_sign(reg2);
         m_state.psw_overflow = false;
-        m_state.psw_carry = reg2_64 & (1ULL << 32);
         break;
     }
     case op_type_t::XOR_001110:
