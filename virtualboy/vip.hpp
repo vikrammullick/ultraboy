@@ -17,6 +17,11 @@ class frame_buffer_t : public memory_block_t {
     frame_buffer_t();
 };
 
+class character_table_t : public memory_block_t {
+  public:
+    character_table_t();
+};
+
 class world_attributes_t : public memory_block_t {
   public:
     world_attributes_t();
@@ -24,6 +29,7 @@ class world_attributes_t : public memory_block_t {
 
 class vip_t {
     frame_buffer_t m_frame_buffer_left_0;
+    character_table_t m_character_table_0;
     world_attributes_t m_world_attributes;
 
   public:
