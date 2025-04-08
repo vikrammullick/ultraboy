@@ -12,6 +12,13 @@ void memory_block_t::write_h(uint32_t addr, uint16_t val) {
     *half_word_ptr = val;
 }
 
+uint16_t memory_block_t::read_h(uint32_t addr) {
+    const char *byte_ptr = m_data.data() + addr;
+    const uint16_t *half_word_ptr =
+        reinterpret_cast<const uint16_t *>(byte_ptr);
+    return *half_word_ptr;
+}
+
 constexpr size_t FRAME_BUFFER_SIZE = 0x6000;
 frame_buffer_t::frame_buffer_t() : memory_block_t(FRAME_BUFFER_SIZE) {}
 
@@ -33,15 +40,17 @@ constexpr size_t CHARACTER_TABLE_3_START = 0x0001E000;
 
 constexpr size_t WORLD_ATTRIBUTES_START = 0x0003D800;
 
+#define ADD_RW_BOUNDS(addr, base, start)                                       \
+    (addr >= start && addr < (start + base##_SIZE))
+
 #define ADD_WRITE_H(buf, base)                                                 \
-    if (addr >= base##_START && addr < (base##_START + base##_SIZE)) {         \
+    if (ADD_RW_BOUNDS(addr, base, base##_START)) {                             \
         buf.write_h(addr - base##_START, val);                                 \
         return;                                                                \
     }
 
 #define ADD_WRITE_H_SUFFIX(buf, base, suffix)                                  \
-    if (addr >= base##_##suffix##_START &&                                     \
-        addr < (base##_##suffix##_START + base##_SIZE)) {                      \
+    if (ADD_RW_BOUNDS(addr, base, base##_##suffix##_START)) {                  \
         buf.write_h(addr - base##_##suffix##_START, val);                      \
         return;                                                                \
     }
@@ -56,6 +65,31 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_WRITE_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
     ADD_WRITE_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
     ADD_WRITE_H(m_world_attributes, WORLD_ATTRIBUTES);
+
+    cout << std::hex << addr << endl;
+    assert(false);
+}
+
+#define ADD_READ_H(buf, base)                                                  \
+    if (ADD_RW_BOUNDS(addr, base, base##_START)) {                             \
+        return buf.read_h(addr - base##_START);                                \
+    }
+
+#define ADD_READ_H_SUFFIX(buf, base, suffix)                                   \
+    if (ADD_RW_BOUNDS(addr, base, base##_##suffix##_START)) {                  \
+        return buf.read_h(addr - base##_##suffix##_START);                     \
+    }
+
+uint16_t vip_t::read_h(uint32_t addr) {
+    ADD_READ_H_SUFFIX(m_frame_buffer_left_0, FRAME_BUFFER, LEFT_0);
+    ADD_READ_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, 0);
+    ADD_READ_H_SUFFIX(m_frame_buffer_left_1, FRAME_BUFFER, LEFT_1);
+    ADD_READ_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, 1);
+    ADD_READ_H_SUFFIX(m_frame_buffer_right_0, FRAME_BUFFER, RIGHT_0);
+    ADD_READ_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
+    ADD_READ_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
+    ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
+    ADD_READ_H(m_world_attributes, WORLD_ATTRIBUTES);
 
     cout << std::hex << addr << endl;
     assert(false);

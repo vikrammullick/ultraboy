@@ -48,6 +48,9 @@ uint16_t memory_bus_t::read_h(uint32_t addr) {
     addr &= MEMORY_MASK;
     addr &= HALFWORD_MASK;
 
+    if (addr >= VIP_START && addr <= VIP_END) {
+        return m_vip.read_h(addr - VIP_START);
+    }
     if (addr >= WRAM_START && addr <= WRAM_END) {
         return m_wram.read_h(addr - WRAM_START);
     }

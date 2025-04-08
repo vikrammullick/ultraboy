@@ -10,6 +10,7 @@ class memory_block_t {
     memory_block_t(size_t size);
 
     void write_h(uint32_t addr, uint16_t val);
+    uint16_t read_h(uint32_t addr);
 };
 
 class frame_buffer_t : public memory_block_t {
@@ -40,6 +41,7 @@ class vip_t {
 
   public:
     void write_h(uint32_t addr, uint16_t val);
+    uint16_t read_h(uint32_t addr);
 };
 
 #endif // VIP_H
