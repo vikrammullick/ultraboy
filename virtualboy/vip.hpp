@@ -30,6 +30,12 @@ class world_attributes_t : public memory_block_t {
 class vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
+    frame_buffer_t m_frame_buffer_left_1;
+    character_table_t m_character_table_1;
+    frame_buffer_t m_frame_buffer_right_0;
+    character_table_t m_character_table_2;
+    frame_buffer_t m_frame_buffer_right_1;
+    character_table_t m_character_table_3;
     world_attributes_t m_world_attributes;
 
   public:
