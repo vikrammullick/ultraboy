@@ -108,6 +108,14 @@ struct display_control_register_t {
     void write(uint16_t val);
 };
 
+struct game_frame_control_register_t {
+    uint8_t m_FRMCYC;
+
+    uint16_t read() { return m_FRMCYC & 0b1111; }
+
+    void write(uint16_t val) { m_FRMCYC = (val & 0b1111); }
+};
+
 struct drawing_control_register_t {
     vip_t &m_vip;
     bool m_SBOUT;
@@ -143,6 +151,8 @@ struct vip_t {
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
     display_control_register_t m_DPSTTS;
+
+    game_frame_control_register_t m_FRMCYC;
 
     drawing_control_register_t m_XPSTTS;
 
