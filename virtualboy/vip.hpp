@@ -43,6 +43,28 @@ struct interrupt_register_t {
                (m_FRAMESTART << 4) | (m_GAMESTART << 3) | (m_RFBEND << 2) |
                (m_LFBEND << 1) | (m_SCANERR << 0);
     }
+
+    void write(uint16_t val) {
+        m_TIMEERR = val & (1 << 15);
+        m_XPEND = val & (1 << 14);
+        m_SBHIT = val & (1 << 13);
+        m_FRAMESTART = val & (1 << 4);
+        m_GAMESTART = val & (1 << 3);
+        m_RFBEND = val & (1 << 2);
+        m_LFBEND = val & (1 << 1);
+        m_SCANERR = val & (1 << 0);
+    }
+
+    void clear(uint16_t val) {
+        m_TIMEERR = (val & (1 << 15)) ? false : m_TIMEERR;
+        m_XPEND = (val & (1 << 14)) ? false : m_XPEND;
+        m_SBHIT = (val & (1 << 13)) ? false : m_SBHIT;
+        m_FRAMESTART = (val & (1 << 4)) ? false : m_FRAMESTART;
+        m_GAMESTART = (val & (1 << 3)) ? false : m_GAMESTART;
+        m_RFBEND = (val & (1 << 2)) ? false : m_RFBEND;
+        m_LFBEND = (val & (1 << 1)) ? false : m_LFBEND;
+        m_SCANERR = (val & (1 << 0)) ? false : m_SCANERR;
+    }
 };
 
 struct display_control_register_t {
