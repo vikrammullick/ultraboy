@@ -4,6 +4,8 @@
 
 using namespace std;
 
+constexpr uint32_t VIP_MEMORY_MASK = 0x0007FFFF;
+
 memory_block_t::memory_block_t(size_t size) : m_data(size) {}
 
 void memory_block_t::write_h(uint32_t addr, uint16_t val) {
@@ -56,6 +58,8 @@ constexpr size_t WORLD_ATTRIBUTES_START = 0x0003D800;
     }
 
 void vip_t::write_h(uint32_t addr, uint16_t val) {
+    addr &= VIP_MEMORY_MASK;
+
     ADD_WRITE_H_SUFFIX(m_frame_buffer_left_0, FRAME_BUFFER, LEFT_0);
     ADD_WRITE_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, 0);
     ADD_WRITE_H_SUFFIX(m_frame_buffer_left_1, FRAME_BUFFER, LEFT_1);
@@ -81,6 +85,8 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     }
 
 uint16_t vip_t::read_h(uint32_t addr) {
+    addr &= VIP_MEMORY_MASK;
+
     ADD_READ_H_SUFFIX(m_frame_buffer_left_0, FRAME_BUFFER, LEFT_0);
     ADD_READ_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, 0);
     ADD_READ_H_SUFFIX(m_frame_buffer_left_1, FRAME_BUFFER, LEFT_1);
