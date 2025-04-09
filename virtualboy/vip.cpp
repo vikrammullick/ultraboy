@@ -42,6 +42,11 @@ constexpr size_t CHARACTER_TABLE_3_START = 0x0001E000;
 
 constexpr size_t WORLD_ATTRIBUTES_START = 0x0003D800;
 
+constexpr size_t CHARACTER_TABLE_MIRROR_0_START = 0x00078000;
+constexpr size_t CHARACTER_TABLE_MIRROR_1_START = 0x0007A000;
+constexpr size_t CHARACTER_TABLE_MIRROR_2_START = 0x0007C000;
+constexpr size_t CHARACTER_TABLE_MIRROR_3_START = 0x0007E000;
+
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
     (addr >= start && addr < (start + base##_SIZE))
 
@@ -68,7 +73,13 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_WRITE_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
     ADD_WRITE_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
     ADD_WRITE_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
+
     ADD_WRITE_H(m_world_attributes, WORLD_ATTRIBUTES);
+
+    ADD_WRITE_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, MIRROR_0);
+    ADD_WRITE_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);
+    ADD_WRITE_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, MIRROR_2);
+    ADD_WRITE_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, MIRROR_3);
 
     cout << std::hex << addr << endl;
     assert(false);
@@ -95,7 +106,13 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_READ_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
     ADD_READ_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
     ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
+
     ADD_READ_H(m_world_attributes, WORLD_ATTRIBUTES);
+
+    ADD_READ_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, MIRROR_0);
+    ADD_READ_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);
+    ADD_READ_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, MIRROR_2);
+    ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, MIRROR_3);
 
     cout << std::hex << addr << endl;
     assert(false);
