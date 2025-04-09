@@ -45,6 +45,25 @@ struct interrupt_register_t {
     }
 };
 
+struct display_control_register_t {
+    bool m_LOCK;
+    bool m_SYNCE = false;
+    bool m_RE = false;
+    bool m_FCLK;
+    bool m_SCANRDY;
+    bool m_R1BSY;
+    bool m_L1BSY;
+    bool m_R0BSY;
+    bool m_L0BSY;
+    bool m_DISP = false;
+
+    uint16_t read() {
+        return (m_LOCK << 10) | (m_SYNCE << 9) | (m_RE << 8) | (m_FCLK << 7) |
+               (m_SCANRDY << 6) | (m_R1BSY << 5) | (m_L1BSY << 4) |
+               (m_R0BSY << 3) | (m_L0BSY << 2) | (m_DISP << 1);
+    }
+};
+
 class vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -58,6 +77,7 @@ class vip_t {
 
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
+    display_control_register_t m_DPSTTS;
 
   public:
     void write_h(uint32_t addr, uint16_t val);

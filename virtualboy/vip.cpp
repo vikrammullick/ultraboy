@@ -51,6 +51,8 @@ namespace io_registers {
 constexpr size_t INTPND_ADDR = 0x0005F800;
 constexpr size_t INTENB_ADDR = 0x0005F802;
 constexpr size_t INTCLR_ADDR = 0x0005F804;
+constexpr size_t DPSTTS_ADDR = 0x0005F820;
+constexpr size_t DPCTRL_ADDR = 0x0005F820;
 } // namespace io_registers
 
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
@@ -134,6 +136,8 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_REGISTER_READ(INTPND);
     ADD_REGISTER_READ(INTENB);
     ADD_REGISTER_READ_UNSUPPORTED(INTCLR);
+    ADD_REGISTER_READ(DPSTTS);
+    ADD_REGISTER_READ_UNSUPPORTED(DPCTRL);
 
     cout << std::hex << addr << endl;
     assert(false);
