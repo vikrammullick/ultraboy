@@ -19,11 +19,24 @@ memory_bus_t::memory_bus_t(const std::vector<char> &rom_bytes)
 
 void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
     addr &= MEMORY_MASK;
+
+    if (addr >= WRAM_START && addr <= WRAM_END) {
+        m_wram.write_b(addr - WRAM_START, val);
+        return;
+    }
+
+    cout << std::hex << addr << ": " << static_cast<uint16_t>(val) << endl;
     assert(false);
 }
 
 uint8_t memory_bus_t::read_b(uint32_t addr) {
     addr &= MEMORY_MASK;
+
+    if (addr >= WRAM_START && addr <= WRAM_END) {
+        return m_wram.read_b(addr - WRAM_START);
+    }
+
+    cout << std::hex << addr << endl;
     assert(false);
 }
 
@@ -40,7 +53,7 @@ void memory_bus_t::write_h(uint32_t addr, uint16_t val) {
         return;
     }
 
-    cout << std::hex << addr << endl;
+    cout << std::hex << addr << ": " << val << endl;
     assert(false);
 }
 

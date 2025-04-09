@@ -8,6 +8,10 @@ constexpr size_t WRAM_SIZE = 0x01000000;
 
 wram_t::wram_t() : m_bytes(WRAM_SIZE) {}
 
+void wram_t::write_b(uint32_t addr, uint8_t val) { m_bytes[addr] = val; }
+
+uint8_t wram_t::read_b(uint32_t addr) { return m_bytes[addr]; }
+
 void wram_t::write_h(uint32_t addr, uint16_t val) {
     char *byte_ptr = m_bytes.data() + addr;
     uint16_t *half_word_ptr = reinterpret_cast<uint16_t *>(byte_ptr);
