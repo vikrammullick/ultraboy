@@ -34,6 +34,18 @@ void display_control_register_t::write(uint16_t val) {
     }
 }
 
+void drawing_control_register_t::write(uint16_t val) {
+    m_SBCMP = (val >> 8) & 0b11111;
+    m_XPEN = val & (1 << 1);
+
+    bool XPRST = val & (1 << 0);
+    if (XPRST) {
+        m_XPEN = false;
+        m_vip.m_INTPND.xprst();
+        m_vip.m_INTENB.xprst();
+    }
+}
+
 constexpr size_t FRAME_BUFFER_SIZE = 0x6000;
 frame_buffer_t::frame_buffer_t() : memory_block_t(FRAME_BUFFER_SIZE) {}
 
@@ -122,6 +134,9 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP(INTCLR, INTENB, clear);
     ADD_REGISTER_OP_UNSUPPORTED(DPSTTS, write);
     ADD_REGISTER_OP(DPCTRL, DPSTTS, write);
+
+    ADD_REGISTER_OP_UNSUPPORTED(XPSTTS, write);
+    ADD_REGISTER_OP(XPCTRL, XPSTTS, write);
 
     cout << std::hex << addr << ": " << val << endl;
     assert(false);

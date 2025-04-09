@@ -74,6 +74,12 @@ struct interrupt_register_t {
         m_LFBEND = false;
         m_SCANERR = false;
     }
+
+    void xprst() {
+        m_TIMEERR = false;
+        m_XPEND = false;
+        m_SBHIT = false;
+    }
 };
 
 struct vip_t;
@@ -103,18 +109,24 @@ struct display_control_register_t {
 };
 
 struct drawing_control_register_t {
+    vip_t &m_vip;
     bool m_SBOUT;
     uint8_t m_SBCOUNT;
+    uint8_t m_SBCMP;
     bool m_OVERTIME;
     bool m_F1BSY;
     bool m_F0BSY;
     bool m_XPEN = false;
+
+    drawing_control_register_t(vip_t &vip) : m_vip(vip) {}
 
     uint16_t read() {
         return (m_SBOUT << 15) | ((m_SBCOUNT & 0b11111) << 8) |
                (m_OVERTIME << 4) | (m_F1BSY << 3) | (m_F0BSY << 2) |
                (m_XPEN << 1);
     }
+
+    void write(uint16_t val);
 };
 
 struct vip_t {
@@ -134,7 +146,7 @@ struct vip_t {
 
     drawing_control_register_t m_XPSTTS;
 
-    vip_t() : m_DPSTTS(*this) {}
+    vip_t() : m_DPSTTS(*this), m_XPSTTS(*this) {}
 
     void write_h(uint32_t addr, uint16_t val);
     uint16_t read_h(uint32_t addr);
