@@ -102,6 +102,21 @@ struct display_control_register_t {
     void write(uint16_t val);
 };
 
+struct drawing_control_register_t {
+    bool m_SBOUT;
+    uint8_t m_SBCOUNT;
+    bool m_OVERTIME;
+    bool m_F1BSY;
+    bool m_F0BSY;
+    bool m_XPEN = false;
+
+    uint16_t read() {
+        return (m_SBOUT << 15) | ((m_SBCOUNT & 0b11111) << 8) |
+               (m_OVERTIME << 4) | (m_F1BSY << 3) | (m_F0BSY << 2) |
+               (m_XPEN << 1);
+    }
+};
+
 struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -116,6 +131,8 @@ struct vip_t {
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
     display_control_register_t m_DPSTTS;
+
+    drawing_control_register_t m_XPSTTS;
 
     vip_t() : m_DPSTTS(*this) {}
 
