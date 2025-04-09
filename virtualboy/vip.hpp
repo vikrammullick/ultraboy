@@ -65,9 +65,21 @@ struct interrupt_register_t {
         m_LFBEND = (val & (1 << 1)) ? false : m_LFBEND;
         m_SCANERR = (val & (1 << 0)) ? false : m_SCANERR;
     }
+
+    void dprst() {
+        m_TIMEERR = false;
+        m_FRAMESTART = false;
+        m_GAMESTART = false;
+        m_RFBEND = false;
+        m_LFBEND = false;
+        m_SCANERR = false;
+    }
 };
 
+struct vip_t;
+
 struct display_control_register_t {
+    vip_t &m_vip;
     bool m_LOCK;
     bool m_SYNCE = false;
     bool m_RE = false;
@@ -79,14 +91,18 @@ struct display_control_register_t {
     bool m_L0BSY;
     bool m_DISP = false;
 
+    display_control_register_t(vip_t &vip) : m_vip(vip) {}
+
     uint16_t read() {
         return (m_LOCK << 10) | (m_SYNCE << 9) | (m_RE << 8) | (m_FCLK << 7) |
                (m_SCANRDY << 6) | (m_R1BSY << 5) | (m_L1BSY << 4) |
                (m_R0BSY << 3) | (m_L0BSY << 2) | (m_DISP << 1);
     }
+
+    void write(uint16_t val);
 };
 
-class vip_t {
+struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
     frame_buffer_t m_frame_buffer_left_1;
@@ -101,7 +117,8 @@ class vip_t {
     interrupt_register_t m_INTENB;
     display_control_register_t m_DPSTTS;
 
-  public:
+    vip_t() : m_DPSTTS(*this) {}
+
     void write_h(uint32_t addr, uint16_t val);
     uint16_t read_h(uint32_t addr);
 };

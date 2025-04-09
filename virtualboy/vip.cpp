@@ -21,6 +21,19 @@ uint16_t memory_block_t::read_h(uint32_t addr) {
     return *half_word_ptr;
 }
 
+void display_control_register_t::write(uint16_t val) {
+    m_LOCK = val & (1 << 10);
+    m_SYNCE = val & (1 << 9);
+    m_RE = val & (1 << 8);
+    m_DISP = val & (1 << 1);
+
+    bool DPRST = val & (1 << 0);
+    if (DPRST) {
+        m_vip.m_INTPND.dprst();
+        m_vip.m_INTENB.dprst();
+    }
+}
+
 constexpr size_t FRAME_BUFFER_SIZE = 0x6000;
 frame_buffer_t::frame_buffer_t() : memory_block_t(FRAME_BUFFER_SIZE) {}
 
@@ -52,7 +65,7 @@ constexpr size_t INTPND_ADDR = 0x0005F800;
 constexpr size_t INTENB_ADDR = 0x0005F802;
 constexpr size_t INTCLR_ADDR = 0x0005F804;
 constexpr size_t DPSTTS_ADDR = 0x0005F820;
-constexpr size_t DPCTRL_ADDR = 0x0005F820;
+constexpr size_t DPCTRL_ADDR = 0x0005F822;
 } // namespace io_registers
 
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
@@ -104,8 +117,10 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP_UNSUPPORTED(INTPND, write);
     ADD_REGISTER_OP(INTENB, INTENB, write);
     ADD_REGISTER_OP(INTCLR, INTENB, clear);
+    ADD_REGISTER_OP_UNSUPPORTED(DPSTTS, write);
+    ADD_REGISTER_OP(DPCTRL, DPSTTS, write);
 
-    cout << std::hex << addr << endl;
+    cout << std::hex << addr << ": " << val << endl;
     assert(false);
 }
 
