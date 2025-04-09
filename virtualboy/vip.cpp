@@ -47,6 +47,12 @@ constexpr size_t CHARACTER_TABLE_MIRROR_1_START = 0x0007A000;
 constexpr size_t CHARACTER_TABLE_MIRROR_2_START = 0x0007C000;
 constexpr size_t CHARACTER_TABLE_MIRROR_3_START = 0x0007E000;
 
+namespace io_registers {
+constexpr size_t INTPND_ADDR = 0x0005F800;
+constexpr size_t INTENB_ADDR = 0x0005F802;
+constexpr size_t INTCLR_ADDR = 0x0005F804;
+} // namespace io_registers
+
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
     (addr >= start && addr < (start + base##_SIZE))
 
@@ -95,6 +101,17 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
         return buf.read_h(addr - base##_##suffix##_START);                     \
     }
 
+#define ADD_REGISTER_READ(reg)                                                 \
+    if (addr == io_registers::reg##_ADDR) {                                    \
+        return m_##reg.read();                                                 \
+    }
+
+#define ADD_REGISTER_READ_UNSUPPORTED(reg)                                     \
+    if (addr == io_registers::reg##_ADDR) {                                    \
+        std::cout << "read not supported for " #reg "\n";                      \
+        assert(false);                                                         \
+    }
+
 uint16_t vip_t::read_h(uint32_t addr) {
     addr &= VIP_MEMORY_MASK;
 
@@ -113,6 +130,10 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_READ_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);
     ADD_READ_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, MIRROR_2);
     ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, MIRROR_3);
+
+    ADD_REGISTER_READ(INTPND);
+    ADD_REGISTER_READ(INTENB);
+    ADD_REGISTER_READ_UNSUPPORTED(INTCLR);
 
     cout << std::hex << addr << endl;
     assert(false);
