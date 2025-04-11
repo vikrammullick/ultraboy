@@ -125,11 +125,11 @@ struct rest_control_register_t {
 };
 
 struct game_frame_control_register_t {
-    uint8_t m_frmcyc;
+    uint8_t m_FRMCYC;
 
-    uint16_t read() { return m_frmcyc & 0b1111; }
+    uint16_t read() { return m_FRMCYC & 0b1111; }
 
-    void write(uint16_t val) { m_frmcyc = val & 0b1111; }
+    void write(uint16_t val) { m_FRMCYC = val & 0b1111; }
 };
 
 struct column_table_address_register_t {
@@ -166,6 +166,14 @@ struct version_register_t {
     uint16_t read() { return VER; }
 };
 
+struct obj_control_register_t {
+    uint16_t m_OBJ_end_number;
+
+    uint16_t read() { return m_OBJ_end_number & 0b1111111111; }
+
+    void write(uint16_t val) { m_OBJ_end_number = val & 0b1111111111; }
+};
+
 struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -187,6 +195,10 @@ struct vip_t {
     game_frame_control_register_t m_FRMCYC;
     column_table_address_register_t m_CTA;
     version_register_t m_VER;
+    obj_control_register_t m_SPT0;
+    obj_control_register_t m_SPT1;
+    obj_control_register_t m_SPT2;
+    obj_control_register_t m_SPT3;
 
     drawing_control_register_t m_XPSTTS;
 
