@@ -160,6 +160,12 @@ struct drawing_control_register_t {
     void write(uint16_t val);
 };
 
+struct version_register_t {
+    static constexpr uint16_t VER = 2;
+
+    uint16_t read() { return VER; }
+};
+
 struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -180,6 +186,7 @@ struct vip_t {
     rest_control_register_t m_REST;
     game_frame_control_register_t m_FRMCYC;
     column_table_address_register_t m_CTA;
+    version_register_t m_VER;
 
     drawing_control_register_t m_XPSTTS;
 

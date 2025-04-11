@@ -84,9 +84,9 @@ constexpr size_t BRTC_ADDR = 0x0005F828;
 constexpr size_t REST_ADDR = 0x0005F82A;
 constexpr size_t FRMCYC_ADDR = 0x0005F82E;
 constexpr size_t CTA_ADDR = 0x0005F830;
-
 constexpr size_t XPSTTS_ADDR = 0x0005F840;
 constexpr size_t XPCTRL_ADDR = 0x0005F842;
+constexpr size_t VER_ADDR = 0x0005F844;
 } // namespace io_registers
 
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
@@ -144,10 +144,11 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP(BRTB, BRTB, write);
     ADD_REGISTER_OP(BRTC, BRTC, write);
     ADD_REGISTER_OP(REST, REST, write);
-    ADD_REGISTER_OP_UNSUPPORTED(CTA, write);
     ADD_REGISTER_OP(FRMCYC, FRMCYC, write);
+    ADD_REGISTER_OP_UNSUPPORTED(CTA, write);
     ADD_REGISTER_OP_UNSUPPORTED(XPSTTS, write);
     ADD_REGISTER_OP(XPCTRL, XPSTTS, write);
+    ADD_REGISTER_OP_UNSUPPORTED(VER, write);
 
     cout << std::hex << addr << ": " << val << endl;
     assert(false);
@@ -200,6 +201,7 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_REGISTER_READ(CTA);
     ADD_REGISTER_READ(XPSTTS);
     ADD_REGISTER_OP_UNSUPPORTED(XPCTRL, read);
+    ADD_REGISTER_READ(VER);
 
     cout << std::hex << addr << endl;
     assert(false);
