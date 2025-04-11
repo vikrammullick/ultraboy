@@ -108,12 +108,20 @@ struct display_control_register_t {
     void write(uint16_t val);
 };
 
+struct brightness_control_register_t {
+    uint8_t m_duration;
+
+    uint16_t read() { return m_duration; }
+
+    void write(uint16_t val) { m_duration = val & 0xFF; }
+};
+
 struct game_frame_control_register_t {
     uint8_t m_FRMCYC;
 
     uint16_t read() { return m_FRMCYC & 0b1111; }
 
-    void write(uint16_t val) { m_FRMCYC = (val & 0b1111); }
+    void write(uint16_t val) { m_FRMCYC = val & 0b1111; }
 };
 
 struct drawing_control_register_t {
@@ -151,6 +159,9 @@ struct vip_t {
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
     display_control_register_t m_DPSTTS;
+    brightness_control_register_t m_BRTA;
+    brightness_control_register_t m_BRTB;
+    brightness_control_register_t m_BRTC;
 
     game_frame_control_register_t m_FRMCYC;
 

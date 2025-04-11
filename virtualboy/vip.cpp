@@ -78,6 +78,9 @@ constexpr size_t INTENB_ADDR = 0x0005F802;
 constexpr size_t INTCLR_ADDR = 0x0005F804;
 constexpr size_t DPSTTS_ADDR = 0x0005F820;
 constexpr size_t DPCTRL_ADDR = 0x0005F822;
+constexpr size_t BRTA_ADDR = 0x0005F824;
+constexpr size_t BRTB_ADDR = 0x0005F826;
+constexpr size_t BRTC_ADDR = 0x0005F828;
 
 constexpr size_t FRMCYC_ADDR = 0x0005F82E;
 
@@ -136,6 +139,9 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP(INTCLR, INTENB, clear);
     ADD_REGISTER_OP_UNSUPPORTED(DPSTTS, write);
     ADD_REGISTER_OP(DPCTRL, DPSTTS, write);
+    ADD_REGISTER_OP(BRTA, BRTA, write);
+    ADD_REGISTER_OP(BRTB, BRTB, write);
+    ADD_REGISTER_OP(BRTC, BRTC, write);
 
     ADD_REGISTER_OP(FRMCYC, FRMCYC, write);
 
@@ -185,6 +191,9 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_REGISTER_OP_UNSUPPORTED(INTCLR, read);
     ADD_REGISTER_READ(DPSTTS);
     ADD_REGISTER_OP_UNSUPPORTED(DPCTRL, read);
+    ADD_REGISTER_READ(BRTA);
+    ADD_REGISTER_READ(BRTB);
+    ADD_REGISTER_READ(BRTC);
 
     ADD_REGISTER_READ(FRMCYC);
 
