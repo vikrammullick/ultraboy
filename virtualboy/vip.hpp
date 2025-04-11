@@ -116,6 +116,14 @@ struct brightness_control_register_t {
     void write(uint16_t val) { m_duration = val & 0xFF; }
 };
 
+struct rest_control_register_t {
+    uint8_t m_duration;
+
+    uint16_t read() { return m_duration; }
+
+    void write(uint16_t val) { m_duration = val & 0xFF; }
+};
+
 struct game_frame_control_register_t {
     uint8_t m_FRMCYC;
 
@@ -162,7 +170,7 @@ struct vip_t {
     brightness_control_register_t m_BRTA;
     brightness_control_register_t m_BRTB;
     brightness_control_register_t m_BRTC;
-
+    rest_control_register_t m_REST;
     game_frame_control_register_t m_FRMCYC;
 
     drawing_control_register_t m_XPSTTS;
