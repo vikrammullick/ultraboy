@@ -125,11 +125,18 @@ struct rest_control_register_t {
 };
 
 struct game_frame_control_register_t {
-    uint8_t m_FRMCYC;
+    uint8_t m_frmcyc;
 
-    uint16_t read() { return m_FRMCYC & 0b1111; }
+    uint16_t read() { return m_frmcyc & 0b1111; }
 
-    void write(uint16_t val) { m_FRMCYC = val & 0b1111; }
+    void write(uint16_t val) { m_frmcyc = val & 0b1111; }
+};
+
+struct column_table_address_register_t {
+    uint8_t m_CTA_L;
+    uint8_t m_CTA_R;
+
+    uint16_t read() { return (m_CTA_R << 8) + m_CTA_L; }
 };
 
 struct drawing_control_register_t {
@@ -172,6 +179,7 @@ struct vip_t {
     brightness_control_register_t m_BRTC;
     rest_control_register_t m_REST;
     game_frame_control_register_t m_FRMCYC;
+    column_table_address_register_t m_CTA;
 
     drawing_control_register_t m_XPSTTS;
 
