@@ -9,6 +9,10 @@ game_pak_t::game_pak_t(const std::vector<char> &rom_bytes)
     assert(0x01000000 % rom_bytes.size() == 0);
 }
 
+uint8_t game_pak_t::rom_read_b(uint32_t addr) {
+    return m_rom_bytes[addr % m_rom_bytes.size()];
+}
+
 uint16_t game_pak_t::rom_read_h(uint32_t addr) {
     const char *byte_ptr = m_rom_bytes.data() + (addr % m_rom_bytes.size());
     const uint16_t *half_word_ptr =

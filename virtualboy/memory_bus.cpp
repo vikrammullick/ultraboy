@@ -35,6 +35,9 @@ uint8_t memory_bus_t::read_b(uint32_t addr) {
     if (addr >= WRAM_START && addr <= WRAM_END) {
         return m_wram.read_b(addr - WRAM_START);
     }
+    if (addr >= GAME_PAK_ROM_START && addr <= GAME_PAK_ROM_END) {
+        return m_game_pak.rom_read_b(addr - GAME_PAK_ROM_START);
+    }
 
     cout << std::hex << addr << endl;
     assert(false);
