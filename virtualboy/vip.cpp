@@ -91,6 +91,14 @@ constexpr size_t SPT0_ADDR = 0x0005F848;
 constexpr size_t SPT1_ADDR = 0x0005F84A;
 constexpr size_t SPT2_ADDR = 0x0005F84C;
 constexpr size_t SPT3_ADDR = 0x0005F84E;
+constexpr size_t GPLT0_ADDR = 0x0005F860;
+constexpr size_t GPLT1_ADDR = 0x0005F862;
+constexpr size_t GPLT2_ADDR = 0x0005F864;
+constexpr size_t GPLT3_ADDR = 0x0005F866;
+constexpr size_t JPLT0_ADDR = 0x0005F868;
+constexpr size_t JPLT1_ADDR = 0x0005F86A;
+constexpr size_t JPLT2_ADDR = 0x0005F86C;
+constexpr size_t JPLT3_ADDR = 0x0005F86E;
 } // namespace io_registers
 
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
@@ -157,6 +165,14 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP(SPT1, SPT1, write);
     ADD_REGISTER_OP(SPT2, SPT2, write);
     ADD_REGISTER_OP(SPT3, SPT3, write);
+    ADD_REGISTER_OP(GPLT0, GPLT0, write);
+    ADD_REGISTER_OP(GPLT1, GPLT1, write);
+    ADD_REGISTER_OP(GPLT2, GPLT2, write);
+    ADD_REGISTER_OP(GPLT3, GPLT3, write);
+    ADD_REGISTER_OP(JPLT0, JPLT0, write);
+    ADD_REGISTER_OP(JPLT1, JPLT1, write);
+    ADD_REGISTER_OP(JPLT2, JPLT2, write);
+    ADD_REGISTER_OP(JPLT3, JPLT3, write);
 
     cout << std::hex << addr << ": " << val << endl;
     assert(false);
@@ -214,6 +230,14 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_REGISTER_READ(SPT1);
     ADD_REGISTER_READ(SPT2);
     ADD_REGISTER_READ(SPT3);
+    ADD_REGISTER_READ(GPLT0);
+    ADD_REGISTER_READ(GPLT1);
+    ADD_REGISTER_READ(GPLT2);
+    ADD_REGISTER_READ(GPLT3);
+    ADD_REGISTER_READ(JPLT0);
+    ADD_REGISTER_READ(JPLT1);
+    ADD_REGISTER_READ(JPLT2);
+    ADD_REGISTER_READ(JPLT3);
 
     cout << std::hex << addr << endl;
     assert(false);

@@ -174,6 +174,20 @@ struct obj_control_register_t {
     void write(uint16_t val) { m_OBJ_end_number = val & 0b1111111111; }
 };
 
+struct palette_control_register_t {
+    uint8_t m_c1;
+    uint8_t m_c2;
+    uint8_t m_c3;
+
+    uint16_t read() { return (m_c3 << 6) | (m_c2 << 4) | (m_c1 << 2); }
+
+    void write(uint16_t val) {
+        m_c1 = val & (0b11 << 2);
+        m_c2 = val & (0b11 << 4);
+        m_c3 = val & (0b11 << 6);
+    }
+};
+
 struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -194,13 +208,20 @@ struct vip_t {
     rest_control_register_t m_REST;
     game_frame_control_register_t m_FRMCYC;
     column_table_address_register_t m_CTA;
+    drawing_control_register_t m_XPSTTS;
     version_register_t m_VER;
     obj_control_register_t m_SPT0;
     obj_control_register_t m_SPT1;
     obj_control_register_t m_SPT2;
     obj_control_register_t m_SPT3;
-
-    drawing_control_register_t m_XPSTTS;
+    palette_control_register_t m_GPLT0;
+    palette_control_register_t m_GPLT1;
+    palette_control_register_t m_GPLT2;
+    palette_control_register_t m_GPLT3;
+    palette_control_register_t m_JPLT0;
+    palette_control_register_t m_JPLT1;
+    palette_control_register_t m_JPLT2;
+    palette_control_register_t m_JPLT3;
 
     vip_t() : m_DPSTTS(*this), m_XPSTTS(*this) {}
 
