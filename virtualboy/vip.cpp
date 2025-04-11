@@ -56,6 +56,9 @@ constexpr size_t WORLD_ATTRIBUTES_SIZE = 0x400;
 world_attributes_t::world_attributes_t()
     : memory_block_t(WORLD_ATTRIBUTES_SIZE) {}
 
+constexpr size_t COLUMN_TABLE_SIZE = 0x200;
+column_table_t::column_table_t() : memory_block_t(COLUMN_TABLE_SIZE) {}
+
 constexpr size_t FRAME_BUFFER_LEFT_0_START = 0x00000000;
 constexpr size_t CHARACTER_TABLE_0_START = 0x00006000;
 constexpr size_t FRAME_BUFFER_LEFT_1_START = 0x00008000;
@@ -66,6 +69,8 @@ constexpr size_t FRAME_BUFFER_RIGHT_1_START = 0x00018000;
 constexpr size_t CHARACTER_TABLE_3_START = 0x0001E000;
 
 constexpr size_t WORLD_ATTRIBUTES_START = 0x0003D800;
+constexpr size_t COLUMN_TABLE_LEFT_START = 0x0003DC00;
+constexpr size_t COLUMN_TABLE_RIGHT_START = 0x0003DE00;
 
 constexpr size_t CHARACTER_TABLE_MIRROR_0_START = 0x00078000;
 constexpr size_t CHARACTER_TABLE_MIRROR_1_START = 0x0007A000;
@@ -142,6 +147,8 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_WRITE_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
 
     ADD_WRITE_H(m_world_attributes, WORLD_ATTRIBUTES);
+    ADD_WRITE_H_SUFFIX(m_column_table_left, COLUMN_TABLE, LEFT);
+    ADD_WRITE_H_SUFFIX(m_column_table_right, COLUMN_TABLE, RIGHT);
 
     ADD_WRITE_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, MIRROR_0);
     ADD_WRITE_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);
@@ -208,6 +215,8 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
 
     ADD_READ_H(m_world_attributes, WORLD_ATTRIBUTES);
+    ADD_READ_H_SUFFIX(m_column_table_left, COLUMN_TABLE, LEFT);
+    ADD_READ_H_SUFFIX(m_column_table_right, COLUMN_TABLE, RIGHT);
 
     ADD_READ_H_SUFFIX(m_character_table_0, CHARACTER_TABLE, MIRROR_0);
     ADD_READ_H_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);

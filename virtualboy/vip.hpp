@@ -28,6 +28,11 @@ class world_attributes_t : public memory_block_t {
     world_attributes_t();
 };
 
+class column_table_t : public memory_block_t {
+  public:
+    column_table_t();
+};
+
 struct interrupt_register_t {
     bool m_TIMEERR = false;
     bool m_XPEND = false;
@@ -206,6 +211,8 @@ struct vip_t {
     frame_buffer_t m_frame_buffer_right_1;
     character_table_t m_character_table_3;
     world_attributes_t m_world_attributes;
+    column_table_t m_column_table_left;
+    column_table_t m_column_table_right;
 
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
