@@ -188,6 +188,14 @@ struct palette_control_register_t {
     }
 };
 
+struct bg_palette_control_register_t {
+    uint8_t m_value;
+
+    uint16_t read() { return m_value; }
+
+    void write(uint16_t val) { m_value = val & 0b11; }
+};
+
 struct vip_t {
     frame_buffer_t m_frame_buffer_left_0;
     character_table_t m_character_table_0;
@@ -222,6 +230,7 @@ struct vip_t {
     palette_control_register_t m_JPLT1;
     palette_control_register_t m_JPLT2;
     palette_control_register_t m_JPLT3;
+    bg_palette_control_register_t m_BKCOL;
 
     vip_t() : m_DPSTTS(*this), m_XPSTTS(*this) {}
 

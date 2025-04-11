@@ -99,6 +99,7 @@ constexpr size_t JPLT0_ADDR = 0x0005F868;
 constexpr size_t JPLT1_ADDR = 0x0005F86A;
 constexpr size_t JPLT2_ADDR = 0x0005F86C;
 constexpr size_t JPLT3_ADDR = 0x0005F86E;
+constexpr size_t BKCOL_ADDR = 0x0005F870;
 } // namespace io_registers
 
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
@@ -173,6 +174,7 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_REGISTER_OP(JPLT1, JPLT1, write);
     ADD_REGISTER_OP(JPLT2, JPLT2, write);
     ADD_REGISTER_OP(JPLT3, JPLT3, write);
+    ADD_REGISTER_OP(BKCOL, BKCOL, write);
 
     cout << std::hex << addr << ": " << val << endl;
     assert(false);
@@ -238,6 +240,7 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_REGISTER_READ(JPLT1);
     ADD_REGISTER_READ(JPLT2);
     ADD_REGISTER_READ(JPLT3);
+    ADD_REGISTER_READ(BKCOL);
 
     cout << std::hex << addr << endl;
     assert(false);
