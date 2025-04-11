@@ -9,6 +9,8 @@ constexpr uint32_t HALFWORD_MASK = 0xFFFFFFFE;
 
 constexpr uint32_t VIP_START = 0x00000000;
 constexpr uint32_t VIP_END = 0x00FFFFFF;
+constexpr uint32_t LINK_START = 0x02000000;
+constexpr uint32_t LINK_END = 0x0200000F;
 constexpr uint32_t WRAM_START = 0x05000000;
 constexpr uint32_t WRAM_END = 0x05FFFFFF;
 constexpr uint32_t GAME_PAK_ROM_START = 0x07000000;
@@ -20,6 +22,10 @@ memory_bus_t::memory_bus_t(const std::vector<char> &rom_bytes)
 void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
     addr &= MEMORY_MASK;
 
+    if (addr >= LINK_START && addr <= LINK_END) {
+        m_link.write_b(addr - LINK_START, val);
+        return;
+    }
     if (addr >= WRAM_START && addr <= WRAM_END) {
         m_wram.write_b(addr - WRAM_START, val);
         return;
@@ -32,6 +38,9 @@ void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
 uint8_t memory_bus_t::read_b(uint32_t addr) {
     addr &= MEMORY_MASK;
 
+    if (addr >= LINK_START && addr <= LINK_END) {
+        return m_link.read_b(addr - LINK_START);
+    }
     if (addr >= WRAM_START && addr <= WRAM_END) {
         return m_wram.read_b(addr - WRAM_START);
     }

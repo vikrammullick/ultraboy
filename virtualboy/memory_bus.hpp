@@ -2,11 +2,13 @@
 #define MEMORY_BUS_H
 
 #include "game_pak.hpp"
+#include "link.hpp"
 #include "vip.hpp"
 #include "wram.hpp"
 
 class memory_bus_t {
     vip_t m_vip;
+    link_t m_link;
     wram_t m_wram;
     game_pak_t m_game_pak;
 
