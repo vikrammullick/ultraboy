@@ -7,7 +7,7 @@
 using namespace std;
 
 cpu_t::cpu_t(memory_bus_t &memory_bus) : m_memory_bus(memory_bus) {
-    // initial cpu state (will add more as more fields added)
+    // initial cpu state (will add more as more fields needed)
     m_state.pc = 0xFFFFFFF0;
     m_state.regs[0] = 0;
 

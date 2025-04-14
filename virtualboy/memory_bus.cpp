@@ -9,6 +9,8 @@ constexpr uint32_t HALFWORD_MASK = 0xFFFFFFFE;
 
 constexpr uint32_t VIP_START = 0x00000000;
 constexpr uint32_t VIP_END = 0x00FFFFFF;
+constexpr uint32_t VSU_START = 0x01000000;
+constexpr uint32_t VSU_END = 0x01FFFFFF;
 constexpr uint32_t WRAM_START = 0x05000000;
 constexpr uint32_t WRAM_END = 0x05FFFFFF;
 constexpr uint32_t GAME_PAK_ROM_START = 0x07000000;
@@ -26,6 +28,11 @@ void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
     }
     if (addr == misc_hardware_registers::WCR_ADDR) {
         m_game_pak.write_misc_b(addr, val);
+        return;
+    }
+
+    if (addr >= VSU_START && addr <= VSU_END) {
+        m_vsu.write_b(addr - VSU_START, val);
         return;
     }
 
