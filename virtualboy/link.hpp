@@ -14,8 +14,8 @@ struct transmitted_data_register_t {
 struct link_t {
     transmitted_data_register_t m_CDTR;
 
-    void write_b(uint32_t addr, uint8_t val);
-    uint8_t read_b(uint32_t addr);
+    void write_misc_b(uint32_t addr, uint8_t val);
+    uint8_t read_misc_b(uint32_t addr);
 };
 
 #endif // LINK_H

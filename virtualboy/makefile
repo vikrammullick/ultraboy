@@ -13,7 +13,7 @@ TARGET := ultraboy
 all: $(TARGET)
 
 run: all
-	./ultraboy roms/tennis.vb
+	./ultraboy roms/wario.vb
 
 $(TARGET): $(OBJS)
 	$(CXX) $(CXXFLAGS) -o $@ $^ -lSDL2

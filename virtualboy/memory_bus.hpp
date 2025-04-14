@@ -6,6 +6,10 @@
 #include "vip.hpp"
 #include "wram.hpp"
 
+namespace misc_hardware_registers {
+constexpr size_t CDTR_ADDR = 0x20000008;
+} // namespace misc_hardware_registers
+
 class memory_bus_t {
     vip_t m_vip;
     link_t m_link;
