@@ -4,8 +4,8 @@
 #include <vector>
 
 struct wait_control_register_t {
-    bool m_EXP1W;
-    bool m_ROM1W;
+    bool m_EXP1W = false;
+    bool m_ROM1W = false;
 
     uint8_t read() { return (m_EXP1W << 1) | (m_ROM1W << 0); }
 
