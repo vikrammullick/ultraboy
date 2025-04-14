@@ -52,6 +52,9 @@ frame_buffer_t::frame_buffer_t() : memory_block_t(FRAME_BUFFER_SIZE) {}
 constexpr size_t CHARACTER_TABLE_SIZE = 0x2000;
 character_table_t::character_table_t() : memory_block_t(CHARACTER_TABLE_SIZE) {}
 
+constexpr size_t BACKGROUND_MAPS_SIZE = 0x1D800;
+background_maps_t::background_maps_t() : memory_block_t(BACKGROUND_MAPS_SIZE) {}
+
 constexpr size_t WORLD_ATTRIBUTES_SIZE = 0x400;
 world_attributes_t::world_attributes_t()
     : memory_block_t(WORLD_ATTRIBUTES_SIZE) {}
@@ -67,7 +70,7 @@ constexpr size_t FRAME_BUFFER_RIGHT_0_START = 0x00010000;
 constexpr size_t CHARACTER_TABLE_2_START = 0x00016000;
 constexpr size_t FRAME_BUFFER_RIGHT_1_START = 0x00018000;
 constexpr size_t CHARACTER_TABLE_3_START = 0x0001E000;
-
+constexpr size_t BACKGROUND_MAPS_START = 0x00020000;
 constexpr size_t WORLD_ATTRIBUTES_START = 0x0003D800;
 constexpr size_t COLUMN_TABLE_LEFT_START = 0x0003DC00;
 constexpr size_t COLUMN_TABLE_RIGHT_START = 0x0003DE00;
@@ -145,7 +148,7 @@ void vip_t::write_h(uint32_t addr, uint16_t val) {
     ADD_WRITE_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
     ADD_WRITE_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
     ADD_WRITE_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
-
+    ADD_WRITE_H(m_background_maps, BACKGROUND_MAPS);
     ADD_WRITE_H(m_world_attributes, WORLD_ATTRIBUTES);
     ADD_WRITE_H_SUFFIX(m_column_table_left, COLUMN_TABLE, LEFT);
     ADD_WRITE_H_SUFFIX(m_column_table_right, COLUMN_TABLE, RIGHT);
@@ -213,7 +216,7 @@ uint16_t vip_t::read_h(uint32_t addr) {
     ADD_READ_H_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
     ADD_READ_H_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
     ADD_READ_H_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
-
+    ADD_READ_H(m_background_maps, BACKGROUND_MAPS);
     ADD_READ_H(m_world_attributes, WORLD_ATTRIBUTES);
     ADD_READ_H_SUFFIX(m_column_table_left, COLUMN_TABLE, LEFT);
     ADD_READ_H_SUFFIX(m_column_table_right, COLUMN_TABLE, RIGHT);

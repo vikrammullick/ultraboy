@@ -23,6 +23,11 @@ class character_table_t : public memory_block_t {
     character_table_t();
 };
 
+class background_maps_t : public memory_block_t {
+  public:
+    background_maps_t();
+};
+
 class world_attributes_t : public memory_block_t {
   public:
     world_attributes_t();
@@ -210,6 +215,7 @@ struct vip_t {
     character_table_t m_character_table_2;
     frame_buffer_t m_frame_buffer_right_1;
     character_table_t m_character_table_3;
+    background_maps_t m_background_maps;
     world_attributes_t m_world_attributes;
     column_table_t m_column_table_left;
     column_table_t m_column_table_right;
