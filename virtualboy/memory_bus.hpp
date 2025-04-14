@@ -7,7 +7,8 @@
 #include "wram.hpp"
 
 namespace misc_hardware_registers {
-constexpr size_t CDTR_ADDR = 0x20000008;
+constexpr size_t CDTR_ADDR = 0x02000008;
+constexpr size_t WCR_ADDR = 0x02000024;
 } // namespace misc_hardware_registers
 
 class memory_bus_t {
