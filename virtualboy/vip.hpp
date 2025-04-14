@@ -38,6 +38,11 @@ class column_table_t : public memory_block_t {
     column_table_t();
 };
 
+class object_attributes_t : public memory_block_t {
+  public:
+    object_attributes_t();
+};
+
 struct interrupt_register_t {
     bool m_TIMEERR = false;
     bool m_XPEND = false;
@@ -219,6 +224,7 @@ struct vip_t {
     world_attributes_t m_world_attributes;
     column_table_t m_column_table_left;
     column_table_t m_column_table_right;
+    object_attributes_t m_object_attributes;
 
     interrupt_register_t m_INTPND;
     interrupt_register_t m_INTENB;
