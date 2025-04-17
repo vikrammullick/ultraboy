@@ -6,6 +6,20 @@
 using namespace std;
 
 void timer_t::write_misc_b(uint32_t addr, uint8_t val) {
+    if (addr == misc_hardware_registers::TLR_ADDR) {
+        // TODO: reset the current timer tick
+        m_reload = (m_reload & 0xFF00) + (val << 0);
+        m_counter = m_reload;
+        return;
+    }
+
+    if (addr == misc_hardware_registers::THR_ADDR) {
+        // TODO: reset the current timer tick
+        m_reload = (val << 8) + (m_reload & 0x00FF);
+        m_counter = m_reload;
+        return;
+    }
+
     if (addr == misc_hardware_registers::TCR_ADDR) {
         m_T_Clk_Sel = val & (1 << 4);
         m_Tim_Z_Int = val & (1 << 3);
