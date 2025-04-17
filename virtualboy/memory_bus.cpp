@@ -26,6 +26,10 @@ void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
         m_link.write_misc_b(addr, val);
         return;
     }
+    if (addr == misc_hardware_registers::TCR_ADDR) {
+        m_timer.write_misc_b(addr, val);
+        return;
+    }
     if (addr == misc_hardware_registers::WCR_ADDR) {
         m_game_pak.write_misc_b(addr, val);
         return;
@@ -50,6 +54,9 @@ uint8_t memory_bus_t::read_b(uint32_t addr) {
 
     if (addr == misc_hardware_registers::CDTR_ADDR) {
         return m_link.read_misc_b(addr);
+    }
+    if (addr == misc_hardware_registers::TCR_ADDR) {
+        return m_timer.read_misc_b(addr);
     }
     if (addr == misc_hardware_registers::WCR_ADDR) {
         return m_game_pak.read_misc_b(addr);

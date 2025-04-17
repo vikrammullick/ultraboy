@@ -3,12 +3,14 @@
 
 #include "game_pak.hpp"
 #include "link.hpp"
+#include "timer.hpp"
 #include "vip.hpp"
 #include "vsu.hpp"
 #include "wram.hpp"
 
 namespace misc_hardware_registers {
 constexpr size_t CDTR_ADDR = 0x02000008;
+constexpr size_t TCR_ADDR = 0x02000020;
 constexpr size_t WCR_ADDR = 0x02000024;
 } // namespace misc_hardware_registers
 
@@ -16,6 +18,7 @@ class memory_bus_t {
     vip_t m_vip;
     vsu_t m_vsu;
     link_t m_link;
+    timer_t m_timer;
     wram_t m_wram;
     game_pak_t m_game_pak;
 

@@ -2,11 +2,12 @@ CXX := g++
 
 CXXFLAGS := -std=c++20 -Wall -O3 -Wswitch-enum
 
-SRCS := run.cpp emulator.cpp cpu.cpp memory_bus.cpp vip.cpp vsu.cpp wram.cpp game_pak.cpp link.cpp
+SRCS := run.cpp emulator.cpp cpu.cpp memory_bus.cpp vip.cpp vsu.cpp wram.cpp game_pak.cpp link.cpp timer.cpp
+
 
 OBJS := $(SRCS:.cpp=.o)
 
-$HEADERS := emulator.hpp cpu.hpp memory_bus.hpp vip.hpp vsu.gpp wram.hpp game_pak.hpp link.hpp
+$HEADERS := emulator.hpp cpu.hpp memory_bus.hpp vip.hpp vsu.gpp wram.hpp game_pak.hpp link.hpp timer.hpp
 
 TARGET := ultraboy
 
