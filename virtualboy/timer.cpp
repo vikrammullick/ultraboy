@@ -33,6 +33,14 @@ void timer_t::write_misc_b(uint32_t addr, uint8_t val) {
 }
 
 uint8_t timer_t::read_misc_b(uint32_t addr) {
+    if (addr == misc_hardware_registers::TLR_ADDR) {
+        return m_counter & 0xFF;
+    }
+
+    if (addr == misc_hardware_registers::THR_ADDR) {
+        return m_counter >> 8;
+    }
+
     if (addr == misc_hardware_registers::TCR_ADDR) {
         return (m_T_Clk_Sel << 4) | (m_Tim_Z_Int << 3) | (true << 2) |
                (m_Z_Stat << 1) | (m_T_Enb << 0);
