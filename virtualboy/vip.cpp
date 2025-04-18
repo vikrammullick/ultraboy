@@ -8,6 +8,8 @@ constexpr uint32_t VIP_MEMORY_MASK = 0x0007FFFF;
 
 memory_block_t::memory_block_t(size_t size) : m_data(size) {}
 
+void memory_block_t::write_b(uint32_t addr, uint8_t val) { m_data[addr] = val; }
+
 void memory_block_t::write_h(uint32_t addr, uint16_t val) {
     char *byte_ptr = m_data.data() + addr;
     uint16_t *half_word_ptr = reinterpret_cast<uint16_t *>(byte_ptr);
@@ -118,6 +120,18 @@ constexpr size_t BKCOL_ADDR = 0x0005F870;
 #define ADD_RW_BOUNDS(addr, base, start)                                       \
     (addr >= start && addr < (start + base##_SIZE))
 
+#define ADD_WRITE_B(buf, base)                                                 \
+    if (ADD_RW_BOUNDS(addr, base, base##_START)) {                             \
+        buf.write_b(addr - base##_START, val);                                 \
+        return;                                                                \
+    }
+
+#define ADD_WRITE_B_SUFFIX(buf, base, suffix)                                  \
+    if (ADD_RW_BOUNDS(addr, base, base##_##suffix##_START)) {                  \
+        buf.write_b(addr - base##_##suffix##_START, val);                      \
+        return;                                                                \
+    }
+
 #define ADD_WRITE_H(buf, base)                                                 \
     if (ADD_RW_BOUNDS(addr, base, base##_START)) {                             \
         buf.write_h(addr - base##_START, val);                                 \
@@ -141,6 +155,32 @@ constexpr size_t BKCOL_ADDR = 0x0005F870;
         std::cout << #op " not supported for " #reg "\n";                      \
         assert(false);                                                         \
     }
+
+void vip_t::write_b(uint32_t addr, uint8_t val) {
+    addr &= VIP_MEMORY_MASK;
+
+    ADD_WRITE_B_SUFFIX(m_frame_buffer_left_0, FRAME_BUFFER, LEFT_0);
+    ADD_WRITE_B_SUFFIX(m_character_table_0, CHARACTER_TABLE, 0);
+    ADD_WRITE_B_SUFFIX(m_frame_buffer_left_1, FRAME_BUFFER, LEFT_1);
+    ADD_WRITE_B_SUFFIX(m_character_table_1, CHARACTER_TABLE, 1);
+    ADD_WRITE_B_SUFFIX(m_frame_buffer_right_0, FRAME_BUFFER, RIGHT_0);
+    ADD_WRITE_B_SUFFIX(m_character_table_2, CHARACTER_TABLE, 2);
+    ADD_WRITE_B_SUFFIX(m_frame_buffer_right_1, FRAME_BUFFER, RIGHT_1);
+    ADD_WRITE_B_SUFFIX(m_character_table_3, CHARACTER_TABLE, 3);
+    ADD_WRITE_B(m_background_maps, BACKGROUND_MAPS);
+    ADD_WRITE_B(m_world_attributes, WORLD_ATTRIBUTES);
+    ADD_WRITE_B_SUFFIX(m_column_table_left, COLUMN_TABLE, LEFT);
+    ADD_WRITE_B_SUFFIX(m_column_table_right, COLUMN_TABLE, RIGHT);
+    ADD_WRITE_B(m_object_attributes, OBJECT_ATTRIBUTES);
+
+    ADD_WRITE_B_SUFFIX(m_character_table_0, CHARACTER_TABLE, MIRROR_0);
+    ADD_WRITE_B_SUFFIX(m_character_table_1, CHARACTER_TABLE, MIRROR_1);
+    ADD_WRITE_B_SUFFIX(m_character_table_2, CHARACTER_TABLE, MIRROR_2);
+    ADD_WRITE_B_SUFFIX(m_character_table_3, CHARACTER_TABLE, MIRROR_3);
+
+    cout << std::hex << addr << ": " << static_cast<uint16_t>(val) << endl;
+    assert(false);
+}
 
 void vip_t::write_h(uint32_t addr, uint16_t val) {
     addr &= VIP_MEMORY_MASK;

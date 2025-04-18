@@ -43,11 +43,14 @@ void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
         return;
     }
 
+    if (addr >= VIP_START && addr <= VIP_END) {
+        m_vip.write_b(addr - VIP_START, val);
+        return;
+    }
     if (addr >= VSU_START && addr <= VSU_END) {
         m_vsu.write_b(addr - VSU_START, val);
         return;
     }
-
     if (addr >= WRAM_START && addr <= WRAM_END) {
         m_wram.write_b(addr - WRAM_START, val);
         return;

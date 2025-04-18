@@ -9,6 +9,7 @@ class memory_block_t {
   public:
     memory_block_t(size_t size);
 
+    void write_b(uint32_t addr, uint8_t val);
     void write_h(uint32_t addr, uint16_t val);
     uint16_t read_h(uint32_t addr);
 };
@@ -253,6 +254,7 @@ struct vip_t {
 
     vip_t() : m_DPSTTS(*this), m_XPSTTS(*this) {}
 
+    void write_b(uint32_t addr, uint8_t val);
     void write_h(uint32_t addr, uint16_t val);
     uint16_t read_h(uint32_t addr);
 };
