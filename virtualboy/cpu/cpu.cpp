@@ -259,6 +259,26 @@ void cpu_t::tick() {
     case op_type_t::CMP_000011:
         sub(reg2, reg1);
         break;
+    case op_type_t::DIV_001001: {
+        int32_t dividend = reg2;
+        int32_t divisor = reg1;
+
+        if (divisor == 0) {
+            // TODO: implement Zero Division exception
+            assert(false);
+        }
+
+        if (dividend == 0x80000000 && divisor == -1) {
+            m_state.regs[30] = 0;
+            m_state.psw_overflow = true;
+        } else {
+            reg2 = dividend / divisor;
+            m_state.regs[30] = dividend % divisor;
+            m_state.psw_overflow = false;
+        }
+        set_zero_and_sign(reg2);
+        break;
+    }
     case op_type_t::MUL_001000: {
         uint64_t product = sign_extend_32_64(reg1) * sign_extend_32_64(reg2);
         m_state.regs[30] = product >> 32;
