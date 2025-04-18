@@ -16,6 +16,17 @@ void game_pad_t::write_misc_b(uint32_t addr, uint8_t val) {
 }
 
 uint8_t game_pad_t::read_misc_b(uint32_t addr) {
+    if (addr == misc_hardware_registers::SDLR_ADDR) {
+        constexpr bool SGN = true;
+        // TODO: read controller lo
+        return (SGN << 1);
+    }
+
+    if (addr == misc_hardware_registers::SDHR_ADDR) {
+        // TODO: read controller hi
+        return 0;
+    }
+
     if (addr == misc_hardware_registers::SCR_ADDR) {
         // TODO: implement serial-level accuracy
         return 0;

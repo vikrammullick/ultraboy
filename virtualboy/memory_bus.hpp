@@ -11,6 +11,8 @@
 
 namespace misc_hardware_registers {
 constexpr size_t CDTR_ADDR = 0x02000008;
+constexpr size_t SDLR_ADDR = 0x02000010;
+constexpr size_t SDHR_ADDR = 0x02000014;
 constexpr size_t TLR_ADDR = 0x02000018;
 constexpr size_t THR_ADDR = 0x0200001C;
 constexpr size_t TCR_ADDR = 0x02000020;

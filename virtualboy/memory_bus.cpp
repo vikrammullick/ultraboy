@@ -67,7 +67,9 @@ uint8_t memory_bus_t::read_b(uint32_t addr) {
     if (addr == misc_hardware_registers::CDTR_ADDR) {
         return m_link.read_misc_b(addr);
     }
-    if (addr == misc_hardware_registers::SCR_ADDR) {
+    if (addr == misc_hardware_registers::SDLR_ADDR ||
+        addr == misc_hardware_registers::SDHR_ADDR ||
+        addr == misc_hardware_registers::SCR_ADDR) {
         return m_game_pad.read_misc_b(addr);
     }
     if (addr == misc_hardware_registers::TLR_ADDR ||
