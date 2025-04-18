@@ -16,6 +16,7 @@ struct wait_control_register_t {
 };
 
 class game_pak_t {
+    std::vector<char> m_ram_bytes;
     const std::vector<char> &m_rom_bytes;
 
     wait_control_register_t m_WCR;
@@ -25,6 +26,11 @@ class game_pak_t {
 
     void write_misc_b(uint32_t addr, uint8_t val);
     uint8_t read_misc_b(uint32_t addr);
+
+    void ram_write_b(uint32_t addr, uint8_t val);
+    uint8_t ram_read_b(uint32_t addr);
+    void ram_write_h(uint32_t addr, uint16_t val);
+    uint16_t ram_read_h(uint32_t addr);
 
     uint8_t rom_read_b(uint32_t addr);
     uint16_t rom_read_h(uint32_t addr);

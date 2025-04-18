@@ -13,6 +13,8 @@ constexpr uint32_t VSU_START = 0x01000000;
 constexpr uint32_t VSU_END = 0x01FFFFFF;
 constexpr uint32_t WRAM_START = 0x05000000;
 constexpr uint32_t WRAM_END = 0x05FFFFFF;
+constexpr uint32_t GAME_PAK_RAM_START = 0x06000000;
+constexpr uint32_t GAME_PAK_RAM_END = 0x06FFFFFF;
 constexpr uint32_t GAME_PAK_ROM_START = 0x07000000;
 constexpr uint32_t GAME_PAK_ROM_END = 0x07FFFFFF;
 
@@ -46,6 +48,10 @@ void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
         m_wram.write_b(addr - WRAM_START, val);
         return;
     }
+    if (addr >= GAME_PAK_RAM_START && addr <= GAME_PAK_RAM_END) {
+        m_game_pak.ram_write_b(addr - GAME_PAK_RAM_START, val);
+        return;
+    }
 
     cout << std::hex << addr << ": " << static_cast<uint16_t>(val) << endl;
     assert(false);
@@ -69,6 +75,9 @@ uint8_t memory_bus_t::read_b(uint32_t addr) {
     if (addr >= WRAM_START && addr <= WRAM_END) {
         return m_wram.read_b(addr - WRAM_START);
     }
+    if (addr >= GAME_PAK_RAM_START && addr <= GAME_PAK_RAM_END) {
+        return m_game_pak.ram_read_b(addr - GAME_PAK_RAM_START);
+    }
     if (addr >= GAME_PAK_ROM_START && addr <= GAME_PAK_ROM_END) {
         return m_game_pak.rom_read_b(addr - GAME_PAK_ROM_START);
     }
@@ -89,6 +98,10 @@ void memory_bus_t::write_h(uint32_t addr, uint16_t val) {
         m_wram.write_h(addr - WRAM_START, val);
         return;
     }
+    if (addr >= GAME_PAK_RAM_START && addr <= GAME_PAK_RAM_END) {
+        m_game_pak.ram_write_h(addr - GAME_PAK_RAM_START, val);
+        return;
+    }
 
     cout << std::hex << addr << ": " << val << endl;
     assert(false);
@@ -103,6 +116,9 @@ uint16_t memory_bus_t::read_h(uint32_t addr) {
     }
     if (addr >= WRAM_START && addr <= WRAM_END) {
         return m_wram.read_h(addr - WRAM_START);
+    }
+    if (addr >= GAME_PAK_RAM_START && addr <= GAME_PAK_RAM_END) {
+        return m_game_pak.ram_read_h(addr - GAME_PAK_RAM_START);
     }
     if (addr >= GAME_PAK_ROM_START && addr <= GAME_PAK_ROM_END) {
         return m_game_pak.rom_read_h(addr - GAME_PAK_ROM_START);
