@@ -62,6 +62,7 @@ enum class op_type_t : uint8_t {
     CMP_010011 = 0b010011,
     CMP_000011 = 0b000011,
     // TODO: DIV/MUL
+    MUL_001000 = 0b001000,
     SUB_000010 = 0b000010,
 
     AND_001101 = 0b001101,

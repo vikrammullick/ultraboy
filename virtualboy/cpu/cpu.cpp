@@ -51,6 +51,10 @@ int32_t sign_extend_8(uint8_t value) {
     return sign_extend(std::bitset<8>(value));
 }
 
+int64_t sign_extend_32_64(uint32_t value) {
+    return static_cast<int64_t>(static_cast<int32_t>(value));
+}
+
 uint32_t word_mask(uint32_t addr) { return addr & 0xFFFFFFFC; }
 
 uint32_t combine_into_word(uint16_t hi, uint16_t lo) { return (hi << 16) + lo; }
@@ -255,6 +259,14 @@ void cpu_t::tick() {
     case op_type_t::CMP_000011:
         sub(reg2, reg1);
         break;
+    case op_type_t::MUL_001000: {
+        uint64_t product = sign_extend_32_64(reg1) * sign_extend_32_64(reg2);
+        m_state.regs[30] = product >> 32;
+        reg2 = product & 0xFFFFFFFF;
+        set_zero_and_sign(reg2);
+        m_state.psw_overflow = product != sign_extend_32_64(reg2);
+        break;
+    }
     case op_type_t::SUB_000010:
         reg2 = sub(reg2, reg1);
         break;
