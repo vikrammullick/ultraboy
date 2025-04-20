@@ -21,7 +21,7 @@ constexpr size_t SCR_ADDR = 0x02000028;
 } // namespace misc_hardware_registers
 
 class memory_bus_t {
-    vip_t m_vip;
+    vip_t &m_vip;
     vsu_t m_vsu;
     link_t m_link;
     game_pad_t m_game_pad;
@@ -30,7 +30,7 @@ class memory_bus_t {
     game_pak_t m_game_pak;
 
   public:
-    memory_bus_t(const std::vector<char> &rom_bytes);
+    memory_bus_t(vip_t &vip, const std::vector<char> &rom_bytes);
 
     void write_b(uint32_t addr, uint8_t val);
     uint8_t read_b(uint32_t addr);

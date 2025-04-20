@@ -18,8 +18,8 @@ constexpr uint32_t GAME_PAK_RAM_END = 0x06FFFFFF;
 constexpr uint32_t GAME_PAK_ROM_START = 0x07000000;
 constexpr uint32_t GAME_PAK_ROM_END = 0x07FFFFFF;
 
-memory_bus_t::memory_bus_t(const std::vector<char> &rom_bytes)
-    : m_game_pak(rom_bytes) {}
+memory_bus_t::memory_bus_t(vip_t &vip, const std::vector<char> &rom_bytes)
+    : m_vip(vip), m_game_pak(rom_bytes) {}
 
 void memory_bus_t::write_b(uint32_t addr, uint8_t val) {
     addr &= MEMORY_MASK;

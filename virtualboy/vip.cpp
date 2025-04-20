@@ -304,3 +304,5 @@ uint16_t vip_t::read_h(uint32_t addr) {
     cout << std::hex << addr << endl;
     assert(false);
 }
+
+void vip_t::tick() {}
