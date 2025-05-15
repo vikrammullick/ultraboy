@@ -61,8 +61,9 @@ enum class op_type_t : uint8_t {
     ADDI_101001 = 0b101001,
     CMP_010011 = 0b010011,
     CMP_000011 = 0b000011,
-    // TODO: DIVU/MULU
     DIV_001001 = 0b001001,
+    DIVU_001011 = 0b001011,
+    // TODO: MULU
     MUL_001000 = 0b001000,
     SUB_000010 = 0b000010,
 
@@ -99,6 +100,7 @@ class cpu_t {
 
     void set_zero_and_sign(uint32_t res);
     void set_psw(uint32_t val);
+    void check_zero_division_exception(uint32_t divisor);
     uint32_t add(uint32_t op1, uint32_t op2);
     uint32_t sub(uint32_t op1, uint32_t op2);
     uint32_t sar(uint32_t op1, uint8_t op2);

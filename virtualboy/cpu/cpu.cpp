@@ -106,6 +106,13 @@ void cpu_t::set_psw(uint32_t val) {
     m_state.psw_interrupt_mask_level = (val >> 16) & 0b1111;
 }
 
+void cpu_t::check_zero_division_exception(uint32_t divisor) {
+    if (divisor == 0) {
+        // TODO: implement Zero Division exception
+        assert(false);
+    }
+}
+
 uint32_t cpu_t::add(uint32_t op1, uint32_t op2) {
     uint32_t out = op1 + op2;
     set_zero_and_sign(out);
@@ -263,10 +270,7 @@ void cpu_t::tick() {
         int32_t dividend = reg2;
         int32_t divisor = reg1;
 
-        if (divisor == 0) {
-            // TODO: implement Zero Division exception
-            assert(false);
-        }
+        check_zero_division_exception(divisor);
 
         if (dividend == 0x80000000 && divisor == -1) {
             m_state.regs[30] = 0;
@@ -276,6 +280,18 @@ void cpu_t::tick() {
             m_state.regs[30] = dividend % divisor;
             m_state.psw_overflow = false;
         }
+        set_zero_and_sign(reg2);
+        break;
+    }
+    case op_type_t::DIVU_001011: {
+        uint32_t dividend = reg2;
+        uint32_t divisor = reg1;
+
+        check_zero_division_exception(divisor);
+
+        reg2 = dividend / divisor;
+        m_state.regs[30] = dividend % divisor;
+        m_state.psw_overflow = false;
         set_zero_and_sign(reg2);
         break;
     }
