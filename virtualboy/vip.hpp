@@ -198,9 +198,9 @@ struct palette_control_register_t {
     uint16_t read() { return (m_c3 << 6) | (m_c2 << 4) | (m_c1 << 2); }
 
     void write(uint16_t val) {
-        m_c1 = val & (0b11 << 2);
-        m_c2 = val & (0b11 << 4);
-        m_c3 = val & (0b11 << 6);
+        m_c1 = (val >> 2) & 0b11;
+        m_c2 = (val >> 4) & 0b11;
+        m_c3 = (val >> 6) & 0b11;
     }
 };
 
