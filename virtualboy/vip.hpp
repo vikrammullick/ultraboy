@@ -3,6 +3,11 @@
 
 #include <vector>
 
+consteval uint16_t bitmask(uint8_t len) {
+    assert(len <= 15);
+    return (1 << len) - 1;
+}
+
 class memory_block_t {
     std::vector<char> m_data;
 
@@ -143,9 +148,9 @@ struct rest_control_register_t {
 struct game_frame_control_register_t {
     uint8_t m_FRMCYC;
 
-    uint16_t read() { return m_FRMCYC & 0b1111; }
+    uint16_t read() { return m_FRMCYC & bitmask(4); }
 
-    void write(uint16_t val) { m_FRMCYC = val & 0b1111; }
+    void write(uint16_t val) { m_FRMCYC = val & bitmask(4); }
 };
 
 struct column_table_address_register_t {
@@ -168,7 +173,7 @@ struct drawing_control_register_t {
     drawing_control_register_t(vip_t &vip) : m_vip(vip) {}
 
     uint16_t read() {
-        return (m_SBOUT << 15) | ((m_SBCOUNT & 0b11111) << 8) |
+        return (m_SBOUT << 15) | ((m_SBCOUNT & bitmask(5)) << 8) |
                (m_OVERTIME << 4) | (m_F1BSY << 3) | (m_F0BSY << 2) |
                (m_XPEN << 1);
     }
@@ -185,9 +190,9 @@ struct version_register_t {
 struct obj_control_register_t {
     uint16_t m_OBJ_end_number;
 
-    uint16_t read() { return m_OBJ_end_number & 0b1111111111; }
+    uint16_t read() { return m_OBJ_end_number & bitmask(10); }
 
-    void write(uint16_t val) { m_OBJ_end_number = val & 0b1111111111; }
+    void write(uint16_t val) { m_OBJ_end_number = val & bitmask(10); }
 };
 
 struct palette_control_register_t {
@@ -198,9 +203,9 @@ struct palette_control_register_t {
     uint16_t read() { return (m_c3 << 6) | (m_c2 << 4) | (m_c1 << 2); }
 
     void write(uint16_t val) {
-        m_c1 = (val >> 2) & 0b11;
-        m_c2 = (val >> 4) & 0b11;
-        m_c3 = (val >> 6) & 0b11;
+        m_c1 = (val >> 2) & bitmask(2);
+        m_c2 = (val >> 4) & bitmask(2);
+        m_c3 = (val >> 6) & bitmask(2);
     }
 };
 
@@ -209,7 +214,7 @@ struct bg_palette_control_register_t {
 
     uint16_t read() { return m_value; }
 
-    void write(uint16_t val) { m_value = val & 0b11; }
+    void write(uint16_t val) { m_value = val & bitmask(2); }
 };
 
 struct vip_t {
