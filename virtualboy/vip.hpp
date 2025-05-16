@@ -68,9 +68,59 @@ class background_maps_t : public memory_block_t {
     }
 };
 
+class world_t {
+    std::array<uint16_t, 16> m_data;
+
+  public:
+    enum class type_t : uint8_t {
+        NormalBG = 0,
+        HBiasBG = 1,
+        AffineBG = 2,
+        OBJ = 3,
+    };
+
+    bool LON() const { return (m_data[0] >> 15) & 0b1; }
+    bool RON() const { return (m_data[0] >> 14) & 0b1; }
+    type_t BGM() const {
+        return static_cast<type_t>((m_data[0] >> 12) & bitmask(2));
+    }
+    uint8_t SCX() const { return (m_data[0] >> 10) & bitmask(2); }
+    uint8_t SCY() const { return (m_data[0] >> 8) & bitmask(2); }
+    bool OVER() const { return (m_data[0] >> 7) & 0b1; }
+    bool END() const { return (m_data[0] >> 6) & 0b1; }
+    uint8_t BGMapBase() const { return (m_data[0] >> 0) & bitmask(4); }
+    int16_t GX() const {
+        return sign_extend_16(std::bitset<10>(m_data[1] & bitmask(10)));
+    }
+    int16_t GP() const {
+        return sign_extend_16(std::bitset<10>(m_data[2] & bitmask(10)));
+    }
+    int16_t GY() const { return m_data[3]; }
+    int16_t MX() const {
+        return sign_extend_16(std::bitset<13>(m_data[4] & bitmask(13)));
+    }
+    int16_t MP() const {
+        return sign_extend_16(std::bitset<15>(m_data[5] & bitmask(15)));
+    }
+    int16_t MY() const {
+        return sign_extend_16(std::bitset<13>(m_data[6] & bitmask(13)));
+    }
+    uint16_t W() const { return m_data[7] & bitmask(13); }
+    uint16_t H() const { return m_data[8]; }
+    uint16_t ParamBase() const { return m_data[9]; }
+    uint16_t OverplaneCharacter() const { return m_data[10]; }
+};
+
+constexpr size_t NUM_WORLDS = 32;
+typedef std::array<world_t, NUM_WORLDS> worlds_t;
+
 class world_attributes_t : public memory_block_t {
   public:
     world_attributes_t();
+
+    const worlds_t &get() {
+        return *reinterpret_cast<const worlds_t *>(m_data.data());
+    }
 };
 
 class column_table_t : public memory_block_t {
