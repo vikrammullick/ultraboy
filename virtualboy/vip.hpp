@@ -1,11 +1,25 @@
 #ifndef VIP_H
 #define VIP_H
 
+#include <array>
+#include <bitset>
 #include <vector>
 
 consteval uint16_t bitmask(uint8_t len) {
     assert(len <= 15);
     return (1 << len) - 1;
+}
+
+template <size_t N> int16_t sign_extend_16(const std::bitset<N> &bits) {
+    static_assert(N <= 16, "Can only sign-extend up to 16 bits");
+
+    uint16_t value = static_cast<uint16_t>(bits.to_ulong());
+    if (bits[N - 1]) {
+        uint16_t mask = ~((1 << N) - 1);
+        return static_cast<int16_t>(value | mask);
+    } else {
+        return static_cast<int16_t>(value);
+    }
 }
 
 class memory_block_t {
@@ -64,9 +78,43 @@ class column_table_t : public memory_block_t {
     column_table_t();
 };
 
+class object_t {
+    std::array<uint16_t, 4> m_data;
+
+  public:
+    int16_t JX() const {
+        return sign_extend_16(std::bitset<10>(m_data[0] & bitmask(10)));
+    }
+    bool JLON() const { return (m_data[1] >> 15) & 0b1; }
+    bool JRON() const { return (m_data[1] >> 14) & 0b1; }
+    int16_t JP() const {
+        return sign_extend_16(std::bitset<10>(m_data[1] & bitmask(10)));
+    }
+    int16_t JY() const {
+        uint8_t jy = m_data[2] & bitmask(8);
+        if (jy > 0xE0) {
+            // [-31, -1]
+            return static_cast<int16_t>(jy) - 256;
+        }
+        // [0, 224]
+        return jy;
+    }
+    uint16_t JCA() const { return m_data[3] & bitmask(11); }
+    bool JVFLP() const { return (m_data[3] >> 12) & 0b1; }
+    bool JHFLP() const { return (m_data[3] >> 13) & 0b1; }
+    uint8_t JPLTS() const { return (m_data[3] >> 14) & bitmask(2); }
+};
+
+constexpr size_t NUM_OBJS = 1024;
+typedef std::array<object_t, NUM_OBJS> objects_t;
+
 class object_attributes_t : public memory_block_t {
   public:
     object_attributes_t();
+
+    const objects_t &get() {
+        return *reinterpret_cast<const objects_t *>(m_data.data());
+    }
 };
 
 struct interrupt_register_t {
