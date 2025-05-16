@@ -9,6 +9,7 @@ consteval uint16_t bitmask(uint8_t len) {
 }
 
 class memory_block_t {
+  protected:
     std::vector<char> m_data;
 
   public:
@@ -29,9 +30,28 @@ class character_table_t : public memory_block_t {
     character_table_t();
 };
 
+class background_cell_t {
+    uint16_t m_data;
+
+  public:
+    uint16_t Character() const { return m_data & bitmask(11); }
+    bool BVFLP() const { return (m_data >> 12) & 0b1; }
+    bool BHFLP() const { return (m_data >> 13) & 0b1; }
+    uint8_t GPLTS() const { return (m_data >> 14) & bitmask(2); }
+};
+
+typedef std::array<std::array<background_cell_t, 64>, 64> background_t;
+
+constexpr size_t NUM_BACKGROUNDS = 14;
+typedef std::array<background_t, NUM_BACKGROUNDS> backgrounds_t;
+
 class background_maps_t : public memory_block_t {
   public:
     background_maps_t();
+
+    const backgrounds_t &get() {
+        return *reinterpret_cast<const backgrounds_t *>(m_data.data());
+    }
 };
 
 class world_attributes_t : public memory_block_t {
